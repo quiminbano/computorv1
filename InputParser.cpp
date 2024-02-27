@@ -6,11 +6,12 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/28 00:05:47 by corellan         ###   ########.fr       */
+/*   Updated: 2024/02/28 00:48:42 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "InputParser.hpp"
+#include <iostream>
 
 InputParser::InputParser() : p_hasInput(false), p_hasFailed(true)
 {
@@ -27,7 +28,7 @@ InputParser::InputParser(int argc, char **argv) : p_hasInput(false), p_hasFailed
 	if (!argv || argc == 1)
 		return ;
 	p_rawData.clear();
-	for (size_t i = 0; argv[i]; i++)
+	for (size_t i = 1; argv[i]; i++)
 	{
 		p_rawData.append(argv[i]);
 		p_rawData.append(" ");
@@ -42,7 +43,7 @@ void	InputParser::input(int argc, char **argv)
 	if (!argv || argc == 1)
 		return ;
 	p_rawData.clear();
-	for (size_t i = 0; argv[i]; i++)
+	for (size_t i = 1; argv[i]; i++)
 	{
 		p_rawData.append(argv[i]);
 		p_rawData.append(" ");
@@ -92,12 +93,27 @@ pair_parser	InputParser::getInput()
 	return (pairToReturn);
 }
 
-string_vector	&InputParser::p_getSplitted(std::string &input)
+string_vector	InputParser::p_getSplitted(std::string input)
 {
 	string_vector	split;
+	std::string		delimiters;
+	std::string		temp;
+	size_t			possition;
+
 
 	split.clear();
-	
+	delimiters = "+-";
+	temp.clear();
+	possition = 0;
+	while ((possition = input.find_first_of(delimiters)) != std::string::npos)
+	{
+		temp = input.substr(0, possition);
+		split.push_back(temp);
+		input.erase(0, possition + 1);
+	}
+	if (input.size() > 0)
+		split.push_back(input);
+	return (split);
 }
 
 const char	*InputParser::ParserError::what() const throw()

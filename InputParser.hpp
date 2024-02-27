@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:19:09 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/28 00:04:58 by corellan         ###   ########.fr       */
+/*   Updated: 2024/02/28 00:40:27 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ private:
 
 	InputParser	&operator=(InputParser const &other);
 
-	string_vector	&p_getSplitted(std::string &input);
+	string_vector	p_getSplitted(std::string input);
 
 public:
 	class ParserError : public std::exception
