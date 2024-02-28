@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/28 00:48:42 by corellan         ###   ########.fr       */
+/*   Updated: 2024/02/28 17:34:59 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,13 @@ bool	InputParser::fail() const
 	return (p_hasFailed);
 }
 
-pair_parser	InputParser::getInput()
+string_vector	InputParser::getInput()
 {
 	std::string								beforeEqualString;
 	std::string								afterEqualString;
 	std::stringstream						parserObject;
 	string_vector							beforeEqualVector;
 	string_vector							afterEqualVector;
-	std::pair<string_vector, string_vector>	pairToReturn;
 	int										i;
 
 	i = 0;
@@ -87,10 +86,17 @@ pair_parser	InputParser::getInput()
 	}
 	if (i < 2 || parserObject.eof() == false)
 		throw ParserError();
-	beforeEqualVector = p_getSplitted(beforeEqualString);
-	afterEqualVector = p_getSplitted(afterEqualString);
-	pairToReturn = std::make_pair(beforeEqualVector, afterEqualVector);
-	return (pairToReturn);
+	try
+	{
+		beforeEqualVector = p_getSplitted(beforeEqualString);
+		afterEqualVector = p_getSplitted(afterEqualString);
+		p_validateVectors(beforeEqualVector, afterEqualVector);
+	}
+	catch(const std::exception& e)
+	{
+		throw ParserError();
+	}
+	return (p_mergeVectors(beforeEqualVector, afterEqualVector));
 }
 
 string_vector	InputParser::p_getSplitted(std::string input)
@@ -99,21 +105,106 @@ string_vector	InputParser::p_getSplitted(std::string input)
 	std::string		delimiters;
 	std::string		temp;
 	size_t			possition;
+	char			sign_char;
 
 
 	split.clear();
 	delimiters = "+-";
 	temp.clear();
 	possition = 0;
+	sign_char = '\0';
 	while ((possition = input.find_first_of(delimiters)) != std::string::npos)
 	{
-		temp = input.substr(0, possition);
-		split.push_back(temp);
+		temp.clear();
+		if (sign_char != '\0')
+			temp.push_back(sign_char);
+		temp.append(input.substr(0, possition));
+		if (!p_justspaces(temp))
+			split.push_back(temp);
+		sign_char = input[possition];
 		input.erase(0, possition + 1);
 	}
-	if (input.size() > 0)
-		split.push_back(input);
+	if (input.size() > 0 && !p_justspaces(input))
+	{
+		temp.clear();
+		if (sign_char != '\0')
+			temp.push_back(sign_char);
+		temp.append(input);
+		split.push_back(temp);
+	}
+	else
+	{
+		throw ParserError();
+	}
+	for (std::string &iter : split)
+	{
+		iter.erase((std::remove_if(iter.begin(), iter.end(), [](unsigned char c){return (std::isspace(c));})), iter.end());
+		if (!iter.compare("0"))
+			iter.append("*X^0");
+	}
 	return (split);
+}
+
+int	InputParser::p_justspaces(std::string temp)
+{
+	size_t	i;
+
+	i = 0;
+	while (temp[i])
+	{
+		if (!std::isspace(temp[i]))
+			break ;
+		i++;
+	}
+	if (i == temp.size())
+		return (1);
+	return (0);
+}
+
+void	InputParser::p_validateVectors(string_vector beforeEqual, string_vector afterEqual)
+{
+	for (std::string &snipet : beforeEqual)
+	{
+		if (p_validateInput(snipet) == false)
+			throw ParserError();
+	}
+	for (std::string &snipet2 : afterEqual)
+	{
+		if (p_validateInput(snipet2) == false)
+			throw ParserError();
+	}
+}
+
+bool	InputParser::p_validateInput(std::string input)
+{
+	std::regex	pattern("^[-+]?[0-9]*\\.?[0-9]*\\*[xX]\\^[-+]?[0-9]*$");
+
+	return (std::regex_match(input, pattern));
+}
+
+string_vector	InputParser::p_mergeVectors(string_vector beforeEqual, string_vector afterEqual)
+{
+	std::string	temp;
+
+	for (std::string &content : afterEqual)
+	{
+		temp.clear();
+		if (content[0] == '+' || content[0] == '-')
+		{
+			if (content[0] == '+')
+				temp.push_back('-');
+			else
+				temp.push_back('+');
+			temp.append(content.substr(1));
+		}
+		else
+		{
+			temp.push_back('-');
+			temp.append(content);
+		}
+		beforeEqual.push_back(temp);
+	}
+	return (beforeEqual);
 }
 
 const char	*InputParser::ParserError::what() const throw()

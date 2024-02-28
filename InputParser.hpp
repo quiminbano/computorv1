@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:19:09 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/28 00:40:27 by corellan         ###   ########.fr       */
+/*   Updated: 2024/02/28 17:14:22 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@
 # include <vector>
 # include <stdexcept>
 # include <sstream>
+# include <algorithm>
+# include <regex>
 
 typedef std::vector<std::string>				string_vector;
-typedef std::pair<string_vector, string_vector>	pair_parser;
 class InputParser
 {
 private:
@@ -34,6 +35,10 @@ private:
 	InputParser	&operator=(InputParser const &other);
 
 	string_vector	p_getSplitted(std::string input);
+	int				p_justspaces(std::string temp);
+	void			p_validateVectors(string_vector beforeEqual, string_vector afterEqual);
+	bool			p_validateInput(std::string input);
+	string_vector	p_mergeVectors(string_vector beforeEqual, string_vector afterEqual);
 
 public:
 	class ParserError : public std::exception
@@ -45,9 +50,9 @@ public:
 	InputParser(int argc, char **argv);
 	~InputParser();
 
-	void		input(int argc, char **argv);
-	bool		fail() const;
-	pair_parser	getInput();
+	void			input(int argc, char **argv);
+	bool			fail() const;
+	string_vector	getInput();
 };
 
 #endif
