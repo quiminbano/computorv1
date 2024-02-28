@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:19:09 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/28 17:14:22 by corellan         ###   ########.fr       */
+/*   Updated: 2024/02/28 17:52:39 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <algorithm>
 # include <regex>
 
-typedef std::vector<std::string>				string_vector;
+typedef std::vector<std::string>	string_vector;
 class InputParser
 {
 private:
