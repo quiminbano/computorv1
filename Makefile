@@ -6,13 +6,13 @@
 #    By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/27 22:14:38 by corellan          #+#    #+#              #
-#    Updated: 2024/02/28 00:40:05 by corellan         ###   ########.fr        #
+#    Updated: 2024/02/29 12:16:17 by corellan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = computor
 
-SRC = main.cpp InputParser.cpp
+SRC = main.cpp InputParser.cpp PolynomConverter.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

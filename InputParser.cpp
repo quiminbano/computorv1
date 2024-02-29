@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/28 17:34:59 by corellan         ###   ########.fr       */
+/*   Updated: 2024/02/29 17:53:22 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,46 +101,23 @@ string_vector	InputParser::getInput()
 
 string_vector	InputParser::p_getSplitted(std::string input)
 {
-	string_vector	split;
-	std::string		delimiters;
-	std::string		temp;
-	size_t			possition;
-	char			sign_char;
-
-
-	split.clear();
-	delimiters = "+-";
-	temp.clear();
-	possition = 0;
-	sign_char = '\0';
-	while ((possition = input.find_first_of(delimiters)) != std::string::npos)
+	string_vector				split;
+	std::regex					pattern("[+-]?[0-9]+(\\.[0-9]*)?\\*?(:?[xX]\\^[+-]?[0-9]*)?");
+	std::smatch					match;
+	std::string					copy;
+	std::string					temp;
+	
+	copy = input;
+	copy.erase((std::remove_if(copy.begin(), copy.end(), [](unsigned char c){return (std::isspace(c));})), copy.end());
+	while (std::regex_search(copy, match, pattern))
 	{
-		temp.clear();
-		if (sign_char != '\0')
-			temp.push_back(sign_char);
-		temp.append(input.substr(0, possition));
-		if (!p_justspaces(temp))
-			split.push_back(temp);
-		sign_char = input[possition];
-		input.erase(0, possition + 1);
-	}
-	if (input.size() > 0 && !p_justspaces(input))
-	{
-		temp.clear();
-		if (sign_char != '\0')
-			temp.push_back(sign_char);
-		temp.append(input);
+		if (match.position() != 0)
+			throw ParserError();
+		temp = copy.substr(0, (match.position() + match.length()));
+		if (!temp.compare("0"))
+			temp.append("*X^0");
 		split.push_back(temp);
-	}
-	else
-	{
-		throw ParserError();
-	}
-	for (std::string &iter : split)
-	{
-		iter.erase((std::remove_if(iter.begin(), iter.end(), [](unsigned char c){return (std::isspace(c));})), iter.end());
-		if (!iter.compare("0"))
-			iter.append("*X^0");
+		copy = match.suffix().str();
 	}
 	return (split);
 }
