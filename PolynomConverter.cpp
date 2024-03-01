@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 22:24:00 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/01 22:36:28 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasI
 {
 	string_vector	split;
 	double			tempNumber;
+	double			tempExponent;
+	double			rounded;
 	long			tempExp;
 	std::string		exponents;
 
@@ -42,12 +44,35 @@ PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasI
 		catch(const std::exception &e)
 		{
 			p_hasInputOverflow = true;
-			tempNumber = 0;
+			tempNumber = static_cast<double>(0);
 		}
-		if (p_polynom.find(split[1]) != p_polynom.end())
-			p_polynom[split[1]] = p_polynom[split[1]] + tempNumber;
+		try
+		{
+			tempExponent = std::stod(split[1].substr(2));
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempExponent = static_cast<double>(0);
+		}
+		try
+		{
+			rounded = p_floor(tempExponent);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+		}
+		if (rounded != tempExponent)
+		{
+			p_hasFractionalExponent = true;
+		}
+		exponents.clear();
+		exponents.append("X^" + std::to_string(static_cast<long long>(rounded)));
+		if (p_polynom.find(exponents) != p_polynom.end())
+			p_polynom[exponents] = p_polynom[exponents] + tempNumber;
 		else
-			p_polynom[split[1]] = tempNumber;
+			p_polynom[exponents] = tempNumber;
 	}
 	for (std::pair<std::string const, double> &temp : p_polynom)
 	{
