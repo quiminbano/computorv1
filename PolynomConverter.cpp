@@ -6,33 +6,68 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/29 18:00:18 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/01 18:39:16 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PolynomConverter.hpp"
 
-PolynomConverter::PolynomConverter() : p_hasInput(false), p_grade(0)
+PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
 	
 }
 
-PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasInput(true), p_grade(0)
+PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
 	string_vector	split;
 	double			tempNumber;
+	long			tempExp;
+	std::string		exponents;
 
 	p_polynom.clear();
 	for (std::string &iter : p_input)
 	{
 		split.clear();
 		split = p_split(iter, "*");
-		tempNumber = std::stod(split[0]);
+		if (split[1][0] == 'x')
+			split[1][0] = 'X';
+		if (!split[1].compare("X"))
+			split[1].append("^0");
+		if (split[1][2] == '+')
+			split[1].erase(2, 1);
+		try
+		{
+			tempNumber = std::stod(split[0]);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempNumber = 0;
+		}
 		if (p_polynom.find(split[1]) != p_polynom.end())
 			p_polynom[split[1]] = p_polynom[split[1]] + tempNumber;
 		else
 			p_polynom[split[1]] = tempNumber;
 	}
+	for (std::pair<std::string const, double> &temp : p_polynom)
+	{
+		exponents.clear();
+		exponents = temp.first.substr(2);
+		try
+		{
+			tempExp = std::stol(exponents);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempExp = 0;
+		}
+		if (tempExp < p_minExp && temp.second != static_cast<double>(0))
+			p_minExp = tempExp;
+		if (tempExp > p_maxExp && temp.second != static_cast<double>(0))
+			p_maxExp = tempExp;
+	}
+	p_grade = p_maxExp;
 }
 
 PolynomConverter::~PolynomConverter()
@@ -44,6 +79,8 @@ void	PolynomConverter::initializeInput(string_vector input)
 {
 	string_vector	split;
 	double			tempNumber;
+	long			tempExp;
+	std::string		exponents;
 
 	p_input = input;
 	p_hasInput = true;
@@ -56,7 +93,17 @@ void	PolynomConverter::initializeInput(string_vector input)
 			split[1][0] = 'X';
 		if (!split[1].compare("X"))
 			split[1].append("^0");
-		tempNumber = std::stod(split[0]);
+		if (split[1][2] == '+')
+			split[1].erase(2, 1);
+		try
+		{
+			tempNumber = std::stod(split[0]);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempNumber = 0;
+		}
 		if (p_polynom.find(split[1]) != p_polynom.end())
 			p_polynom[split[1]] = p_polynom[split[1]] + tempNumber;
 		else
@@ -64,7 +111,105 @@ void	PolynomConverter::initializeInput(string_vector input)
 	}
 	for (std::pair<std::string const, double> &temp : p_polynom)
 	{
-		std::cout << "This is the key: " << temp.first << ". This is the value: " << temp.second << std::endl;
+		exponents.clear();
+		exponents = temp.first.substr(2);
+		try
+		{
+			tempExp = std::stol(exponents);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempExp = 0;
+		}
+		if (tempExp < p_minExp && temp.second != static_cast<double>(0))
+			p_minExp = tempExp;
+		if (tempExp > p_maxExp && temp.second != static_cast<double>(0))
+			p_maxExp = tempExp;
+	}
+	p_grade = p_maxExp;
+}
+
+void	PolynomConverter::printPolynom()
+{
+	long		idx;
+	std::string	coefficient;
+	std::string	model;
+
+	idx = p_minExp;
+	if (p_hasInput == false)
+		throw EmptyInput();
+	std::cout << "Reduced form: ";
+	while (idx <= p_maxExp)
+	{
+		model.clear();
+		model.append("X^");
+		model.append(std::to_string(idx));
+		if (p_polynom.find(model) != p_polynom.end())
+		{
+			coefficient = std::to_string(p_polynom.find(model)->second);
+			if (coefficient[0] != '-' && idx != p_minExp)
+				std::cout << "+";
+			else if (coefficient[0] != '-' && idx == p_minExp)
+				std::cout << "";
+			else
+				std::cout << "-";
+			std::cout << " ";
+			if (p_polynom.find(model)->second < 0)
+				std::cout << (p_polynom.find(model)->second * -1) << " * ";
+			else
+				std::cout << (p_polynom.find(model)->second) << " * ";
+		}
+		else
+		{
+			if (idx > p_minExp)
+				std::cout << "+ ";
+			std::cout << 0 << " * ";
+		}
+		std::cout << model;
+		std::cout << " ";
+		idx++;
+	}
+	std::cout << "= 0" << std::endl;
+}
+
+void	PolynomConverter::printPolynomGrade()
+{
+	if (p_hasInput == false)
+		throw EmptyInput();
+	std::cout << "Polynomial degree: " << p_grade << std::endl;
+}
+
+void	PolynomConverter::solvePolynom()
+{
+	if (p_hasInput == false)
+		throw EmptyInput();
+	if (p_hasInputOverflow == true)
+	{
+		std::cout << "Some numbers overflowed during the conversion of the polymon, I can't solve." << std::endl;
+		return ;
+	}
+	if (p_minExp < 0)
+	{
+		std::cout << "The polynom has negative exponents, I can't solve." << std::endl;
+		return ;
+	}
+	if (p_maxExp > 2)
+	{
+		std::cout << "The polynomial degree is strictly greater than 2, I can't solve." << std::endl;
+		return ;
+	}
+	switch (p_grade)
+	{
+	case 1:
+		p_solveLinear();
+		break;
+	case 2:
+		p_solveCuadratic();
+		break;
+	default:
+		std::cout << "Madonna!!" << std::endl;
+		break;
 	}
 }
 
@@ -74,6 +219,7 @@ void	PolynomConverter::clear()
 	p_polynom.clear();
 	p_grade = 0;
 	p_hasInput = false;
+	p_hasInputOverflow = false;
 }
 
 static size_t	findPosString(std::string const &input, std::string const &needle, size_t n)
@@ -192,7 +338,118 @@ string_vector	PolynomConverter::p_split(std::string const &input, std::string co
 	return (split);
 }
 
+void	PolynomConverter::p_solveLinear()
+{
+	double									expZero;
+	double									expOne;
+	double									result;
+	std::map<std::string, double>::iterator	iter;
+
+	result = 0;
+	iter = p_polynom.find("X^0");
+	if (iter != p_polynom.end())
+		expZero = (iter->second * -1);
+	else
+		expZero = 0;
+	expOne = p_polynom.find("X^1")->second;
+	result = expZero / expOne;
+	std::cout << "The solution is:" << std::endl;
+	std::cout << result << std::endl;
+}
+
+void	PolynomConverter::p_solveCuadratic()
+{
+	double									a;
+	double									b;
+	double									c;
+	double									discriminant;
+	double									solution1;
+	double									solution2;
+	std::map<std::string, double>::iterator	iterB;
+	std::map<std::string, double>::iterator	iterC;
+
+	discriminant = 0;
+	b = 0;
+	c = 0;
+	solution1 = 0;
+	solution2 = 0;
+	a = p_polynom.find("X^2")->second;
+	iterB = p_polynom.find("X^1");
+	if (iterB != p_polynom.end())
+		b = p_polynom.find("X^1")->second;
+	iterC = p_polynom.find("X^0");
+	if (iterC != p_polynom.end())
+		c = p_polynom.find("X^0")->second;
+	discriminant = ((b * b) - (static_cast<double>(4) * a * c));
+	if (discriminant < static_cast<double>(0))
+	{
+		std::cout << "Discriminant is strictly negative, I can't solve." << std::endl;
+		return ;
+	}
+	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
+	solution2 = (((b * -1) + (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
+	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
+	std::cout << solution1 << std::endl;
+	std::cout << solution2 << std::endl;
+}
+
+void	PolynomConverter::p_solveGradeCero()
+{
+	double	a;
+
+	a = p_polynom.find("X^0")->second;
+	if (a == static_cast<double>(0))
+		std::cout << "The solution is: Each real number." << std::endl;
+	else
+		std::cout << "I have reached an impossible solution for X, I can't solve." << std::endl;
+}
+
+double	PolynomConverter::p_sqrt(double squared)
+{
+	double	current;
+	double	next;
+	int		counter;
+
+	counter = 0;
+	current = (squared / static_cast<double>(2));
+	if (current == static_cast<double>(0))
+	{
+		next = static_cast<double>(0);
+		return next;
+	}
+	while (1)
+	{
+		next = ((current + (squared / current)) / static_cast<double>(2));
+		if (next == current)
+			break ;
+		counter++;
+		if (counter == 20)
+			break ;
+		current = next;
+	}
+	return (next);
+}
+
+double	PolynomConverter::p_floor(double number)
+{
+	long long	n;
+	double		toReturn;
+
+	if (number >= static_cast<double>(LLONG_MAX) || number <= static_cast<double>(LLONG_MIN))
+		throw FloorError();
+	n = static_cast<long long>(number);
+	toReturn = static_cast<double>(n);
+	if (toReturn == number || toReturn > static_cast<double>(0))
+		return (toReturn);
+	return (toReturn - static_cast<double>(1));
+}
+
 const char	*PolynomConverter::EmptyInput::what() const throw()
 {
 	return ("No input provided");
+}
+
+const char	*PolynomConverter::FloorError::what() const throw()
+{
+	return ("Error trying to floor the number");
 }

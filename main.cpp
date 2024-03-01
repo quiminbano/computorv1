@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 00:22:40 by corellan          #+#    #+#             */
-/*   Updated: 2024/02/29 11:24:27 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/01 16:00:21 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,15 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	converter.initializeInput(input);
+	try
+	{
+		converter.printPolynom();
+		converter.printPolynomGrade();
+		converter.solvePolynom();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 	return (0);
 }
