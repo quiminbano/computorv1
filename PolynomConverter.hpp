@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 18:32:09 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/01 20:29:00 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ private:
 	string_vector					p_input;
 	bool							p_hasInput;
 	bool							p_hasInputOverflow;
+	bool							p_hasFractionalExponent;
 	std::map<std::string, double>	p_polynom;
 	long							p_grade;
 	long							p_minExp;

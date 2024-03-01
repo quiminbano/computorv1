@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 11:50:22 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/01 20:24:10 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ string_vector	InputParser::getInput()
 string_vector	InputParser::p_getSplitted(std::string input)
 {
 	string_vector				split;
-	std::regex					pattern("[+-]?[0-9]+(\\.[0-9]+)?\\*?(:?[xX]\\^[+-]?[0-9]+)?");
+	std::regex					pattern("[+-]?[0-9]+(\\.[0-9]+)?\\*?(:?[xX]\\^[+-]?[0-9]+(:?\\.[0-9]+)?)?");
 	std::smatch					match;
 	std::string					copy;
 	std::string					temp;
@@ -119,6 +119,8 @@ string_vector	InputParser::p_getSplitted(std::string input)
 		split.push_back(temp);
 		copy = match.suffix().str();
 	}
+	if (copy.size() != 0)
+		throw ParserError();
 	return (split);
 }
 
@@ -154,7 +156,7 @@ void	InputParser::p_validateVectors(string_vector beforeEqual, string_vector aft
 
 bool	InputParser::p_validateInput(std::string input)
 {
-	std::regex	pattern("^[-+]?[0-9]*\\.?[0-9]*\\*[xX]\\^[-+]?[0-9]*$");
+	std::regex	pattern("^[-+]?[0-9]+\\.?[0-9]*\\*[xX]\\^[-+]?[0-9]+(:?\\.[0-9]+)?$");
 
 	return (std::regex_match(input, pattern));
 }

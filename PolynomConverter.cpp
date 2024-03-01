@@ -6,18 +6,18 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 18:39:16 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/01 22:24:00 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PolynomConverter.hpp"
 
-PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(false), p_grade(0), p_minExp(0), p_maxExp(0)
+PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
 	
 }
 
-PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_grade(0), p_minExp(0), p_maxExp(0)
+PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
 	string_vector	split;
 	double			tempNumber;
@@ -79,11 +79,15 @@ void	PolynomConverter::initializeInput(string_vector input)
 {
 	string_vector	split;
 	double			tempNumber;
+	double			tempExponent;
+	double			rounded;
 	long			tempExp;
 	std::string		exponents;
 
 	p_input = input;
 	p_hasInput = true;
+	p_hasInputOverflow = false;
+	p_hasFractionalExponent = false;
 	p_polynom.clear();
 	for (std::string &iter : p_input)
 	{
@@ -102,12 +106,35 @@ void	PolynomConverter::initializeInput(string_vector input)
 		catch(const std::exception &e)
 		{
 			p_hasInputOverflow = true;
-			tempNumber = 0;
+			tempNumber = static_cast<double>(0);
 		}
-		if (p_polynom.find(split[1]) != p_polynom.end())
-			p_polynom[split[1]] = p_polynom[split[1]] + tempNumber;
+		try
+		{
+			tempExponent = std::stod(split[1].substr(2));
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempExponent = static_cast<double>(0);
+		}
+		try
+		{
+			rounded = p_floor(tempExponent);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+		}
+		if (rounded != tempExponent)
+		{
+			p_hasFractionalExponent = true;
+		}
+		exponents.clear();
+		exponents.append("X^" + std::to_string(static_cast<long long>(rounded)));
+		if (p_polynom.find(exponents) != p_polynom.end())
+			p_polynom[exponents] = p_polynom[exponents] + tempNumber;
 		else
-			p_polynom[split[1]] = tempNumber;
+			p_polynom[exponents] = tempNumber;
 	}
 	for (std::pair<std::string const, double> &temp : p_polynom)
 	{
@@ -139,6 +166,11 @@ void	PolynomConverter::printPolynom()
 	idx = p_minExp;
 	if (p_hasInput == false)
 		throw EmptyInput();
+	if (p_hasFractionalExponent == true)
+	{
+		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		return ;
+	}
 	std::cout << "Reduced form: ";
 	while (idx <= p_maxExp)
 	{
@@ -177,6 +209,8 @@ void	PolynomConverter::printPolynomGrade()
 {
 	if (p_hasInput == false)
 		throw EmptyInput();
+	if (p_hasFractionalExponent == true)
+		return ;
 	std::cout << "Polynomial degree: " << p_grade << std::endl;
 }
 
@@ -184,6 +218,8 @@ void	PolynomConverter::solvePolynom()
 {
 	if (p_hasInput == false)
 		throw EmptyInput();
+	if (p_hasFractionalExponent == true)
+		return ;
 	if (p_hasInputOverflow == true)
 	{
 		std::cout << "Some numbers overflowed during the conversion of the polymon, I can't solve." << std::endl;
@@ -208,7 +244,7 @@ void	PolynomConverter::solvePolynom()
 		p_solveCuadratic();
 		break;
 	default:
-		std::cout << "Madonna!!" << std::endl;
+		p_solveGradeCero();
 		break;
 	}
 }
@@ -220,6 +256,9 @@ void	PolynomConverter::clear()
 	p_grade = 0;
 	p_hasInput = false;
 	p_hasInputOverflow = false;
+	p_hasFractionalExponent = false;
+	p_minExp = 0;
+	p_maxExp = 0;
 }
 
 static size_t	findPosString(std::string const &input, std::string const &needle, size_t n)
@@ -435,7 +474,8 @@ double	PolynomConverter::p_floor(double number)
 	long long	n;
 	double		toReturn;
 
-	if (number >= static_cast<double>(LLONG_MAX) || number <= static_cast<double>(LLONG_MIN))
+	if (number >= (static_cast<double>((LLONG_MAX / 2) + 1) * static_cast<double>(2)) || \
+		number <= static_cast<double>(LLONG_MIN))
 		throw FloorError();
 	n = static_cast<long long>(number);
 	toReturn = static_cast<double>(n);
