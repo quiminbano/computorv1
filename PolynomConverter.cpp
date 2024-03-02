@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 22:36:28 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/02 16:37:29 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,80 +19,9 @@ PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(fal
 
 PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
-	string_vector	split;
-	double			tempNumber;
-	double			tempExponent;
-	double			rounded;
-	long			tempExp;
-	std::string		exponents;
-
 	p_polynom.clear();
-	for (std::string &iter : p_input)
-	{
-		split.clear();
-		split = p_split(iter, "*");
-		if (split[1][0] == 'x')
-			split[1][0] = 'X';
-		if (!split[1].compare("X"))
-			split[1].append("^0");
-		if (split[1][2] == '+')
-			split[1].erase(2, 1);
-		try
-		{
-			tempNumber = std::stod(split[0]);
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-			tempNumber = static_cast<double>(0);
-		}
-		try
-		{
-			tempExponent = std::stod(split[1].substr(2));
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-			tempExponent = static_cast<double>(0);
-		}
-		try
-		{
-			rounded = p_floor(tempExponent);
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-		}
-		if (rounded != tempExponent)
-		{
-			p_hasFractionalExponent = true;
-		}
-		exponents.clear();
-		exponents.append("X^" + std::to_string(static_cast<long long>(rounded)));
-		if (p_polynom.find(exponents) != p_polynom.end())
-			p_polynom[exponents] = p_polynom[exponents] + tempNumber;
-		else
-			p_polynom[exponents] = tempNumber;
-	}
-	for (std::pair<std::string const, double> &temp : p_polynom)
-	{
-		exponents.clear();
-		exponents = temp.first.substr(2);
-		try
-		{
-			tempExp = std::stol(exponents);
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-			tempExp = 0;
-		}
-		if (tempExp < p_minExp && temp.second != static_cast<double>(0))
-			p_minExp = tempExp;
-		if (tempExp > p_maxExp && temp.second != static_cast<double>(0))
-			p_maxExp = tempExp;
-	}
-	p_grade = p_maxExp;
+	p_storeInMap();
+	p_findExponents();
 }
 
 PolynomConverter::~PolynomConverter()
@@ -102,84 +31,13 @@ PolynomConverter::~PolynomConverter()
 
 void	PolynomConverter::initializeInput(string_vector input)
 {
-	string_vector	split;
-	double			tempNumber;
-	double			tempExponent;
-	double			rounded;
-	long			tempExp;
-	std::string		exponents;
-
 	p_input = input;
 	p_hasInput = true;
 	p_hasInputOverflow = false;
 	p_hasFractionalExponent = false;
 	p_polynom.clear();
-	for (std::string &iter : p_input)
-	{
-		split.clear();
-		split = p_split(iter, "*");
-		if (split[1][0] == 'x')
-			split[1][0] = 'X';
-		if (!split[1].compare("X"))
-			split[1].append("^0");
-		if (split[1][2] == '+')
-			split[1].erase(2, 1);
-		try
-		{
-			tempNumber = std::stod(split[0]);
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-			tempNumber = static_cast<double>(0);
-		}
-		try
-		{
-			tempExponent = std::stod(split[1].substr(2));
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-			tempExponent = static_cast<double>(0);
-		}
-		try
-		{
-			rounded = p_floor(tempExponent);
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-		}
-		if (rounded != tempExponent)
-		{
-			p_hasFractionalExponent = true;
-		}
-		exponents.clear();
-		exponents.append("X^" + std::to_string(static_cast<long long>(rounded)));
-		if (p_polynom.find(exponents) != p_polynom.end())
-			p_polynom[exponents] = p_polynom[exponents] + tempNumber;
-		else
-			p_polynom[exponents] = tempNumber;
-	}
-	for (std::pair<std::string const, double> &temp : p_polynom)
-	{
-		exponents.clear();
-		exponents = temp.first.substr(2);
-		try
-		{
-			tempExp = std::stol(exponents);
-		}
-		catch(const std::exception &e)
-		{
-			p_hasInputOverflow = true;
-			tempExp = 0;
-		}
-		if (tempExp < p_minExp && temp.second != static_cast<double>(0))
-			p_minExp = tempExp;
-		if (tempExp > p_maxExp && temp.second != static_cast<double>(0))
-			p_maxExp = tempExp;
-	}
-	p_grade = p_maxExp;
+	p_storeInMap();
+	p_findExponents();
 }
 
 void	PolynomConverter::printPolynom()
@@ -284,6 +142,89 @@ void	PolynomConverter::clear()
 	p_hasFractionalExponent = false;
 	p_minExp = 0;
 	p_maxExp = 0;
+}
+
+void	PolynomConverter::p_storeInMap()
+{
+	double			tempNumber;
+	double			tempExponent;
+	double			rounded;
+	string_vector	split;
+	std::string		tempString;
+
+	for (std::string &iter : p_input)
+	{
+		split.clear();
+		split = p_split(iter, "*");
+		if (split[1][0] == 'x')
+			split[1][0] = 'X';
+		if (!split[1].compare("X"))
+			split[1].append("^0");
+		if (split[1][2] == '+')
+			split[1].erase(2, 1);
+		try
+		{
+			tempNumber = std::stod(split[0]);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempNumber = static_cast<double>(0);
+		}
+		try
+		{
+			tempExponent = std::stod(split[1].substr(2));
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempExponent = static_cast<double>(0);
+		}
+		try
+		{
+			rounded = p_floor(tempExponent);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+		}
+		if (rounded != tempExponent)
+		{
+			p_hasFractionalExponent = true;
+		}
+		tempString.clear();
+		tempString.append("X^" + std::to_string(static_cast<long long>(rounded)));
+		if (p_polynom.find(tempString) != p_polynom.end())
+			p_polynom[tempString] = p_polynom[tempString] + tempNumber;
+		else
+			p_polynom[tempString] = tempNumber;
+	}
+}
+
+void	PolynomConverter::p_findExponents()
+{
+	long			tempExp;
+	std::string		exponents;
+
+	for (std::pair<std::string const, double> &temp : p_polynom)
+	{
+		exponents.clear();
+		exponents = temp.first.substr(2);
+		try
+		{
+			tempExp = std::stol(exponents);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempExp = 0;
+		}
+		if (tempExp < p_minExp && temp.second != static_cast<double>(0))
+			p_minExp = tempExp;
+		if (tempExp > p_maxExp && temp.second != static_cast<double>(0))
+			p_maxExp = tempExp;
+	}
+	p_grade = p_maxExp;
 }
 
 static size_t	findPosString(std::string const &input, std::string const &needle, size_t n)

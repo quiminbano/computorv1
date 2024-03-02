@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 20:29:00 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/02 16:30:38 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ private:
 	PolynomConverter	&operator=(PolynomConverter const &other);
 
 	string_vector	p_split(std::string const &input, std::string const &needle);
+	void			p_storeInMap();
+	void			p_findExponents();
 	void			p_solveLinear();
 	void			p_solveCuadratic();
 	void			p_solveGradeCero();
