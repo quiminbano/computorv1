@@ -6,12 +6,12 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 00:22:40 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/02 16:41:28 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/03 16:16:14 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "InputParser.hpp"
-#include "PolynomConverter.hpp"
+#include "InputParser_bonus.hpp"
+#include "PolynomConverter_bonus.hpp"
 #include <iostream>
 
 int	main(int argc, char **argv)

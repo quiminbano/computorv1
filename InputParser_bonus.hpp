@@ -6,12 +6,12 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:19:09 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/02 16:41:27 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/03 18:16:50 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INPUTPARSER_HPP
-# define INPUTPARSER_HPP
+#ifndef INPUTPARSER_BONUS_HPP
+# define INPUTPARSER_BONUS_HPP
 
 # include <string>
 # include <vector>
@@ -35,6 +35,7 @@ private:
 	InputParser	&operator=(InputParser const &other);
 
 	string_vector	p_getSplitted(std::string input);
+	void			p_fixSyntax(std::string &copy);
 	int				p_justspaces(std::string temp);
 	void			p_validateVectors(string_vector beforeEqual, string_vector afterEqual);
 	bool			p_validateInput(std::string input);

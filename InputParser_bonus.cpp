@@ -6,11 +6,11 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/02 16:41:25 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/03 17:02:58 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "InputParser.hpp"
+#include "InputParser_bonus.hpp"
 #include <iostream>
 
 InputParser::InputParser() : p_hasInput(false), p_hasFailed(true)
@@ -109,19 +109,51 @@ string_vector	InputParser::p_getSplitted(std::string input)
 	
 	copy = input;
 	copy.erase((std::remove_if(copy.begin(), copy.end(), [](unsigned char c){return (std::isspace(c));})), copy.end());
+	p_fixSyntax(copy);
 	while (std::regex_search(copy, match, pattern))
 	{
 		if (match.position() != 0)
 			throw ParserError();
-		temp = copy.substr(0, (match.position() + match.length()));
+		temp = copy.substr(0, match.length());
 		if (!temp.compare("0"))
 			temp.append("*X^0");
 		split.push_back(temp);
 		copy = match.suffix().str();
+		p_fixSyntax(copy);
 	}
 	if (copy.size() != 0)
 		throw ParserError();
 	return (split);
+}
+
+void	InputParser::p_fixSyntax(std::string &copy)
+{
+	std::regex	pattern1("^(\\+X|\\+x|\\-X|\\-x)");
+	std::regex	pattern2("^[+-]?[0-9]+(:?\\.[0-9]+)?");
+	std::regex	pattern3("^[+-]?[0-9]+(:?\\.[0-9]+)?\\*[xX]");
+	std::smatch	match1;
+	std::smatch	match2;
+	std::smatch	match3;
+
+	if (copy[0] == 'X' || copy[0] == 'x')
+		copy.insert(0, "1*");
+	else if (std::regex_search(copy, match1, pattern1) == true)
+		copy.insert(1, "1*");
+	if (std::regex_search(copy, match2, pattern2) == true)
+	{
+		if (copy[match2.length()] == 'x' || copy[match2.length()] == 'X')
+			copy.insert(match2.length(), "*");
+		if (copy[match2.length()] != '*')
+			copy.insert(match2.length(), "*X^0");
+	}
+	if (std::regex_search(copy, match3, pattern3) == true)
+	{
+		if (copy[match3.length()] != '^' && (std::isdigit(copy[match3.length()]) || \
+			copy[match3.length()] == '+' || copy[match3.length()] == '-'))
+			copy.insert(match3.length(), "^");
+		else if (copy[match3.length()] != '^')
+			copy.insert(match2.length(), "^0");
+	}
 }
 
 int	InputParser::p_justspaces(std::string temp)

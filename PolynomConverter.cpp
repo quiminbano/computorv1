@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/02 16:37:29 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/03 17:49:05 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,8 +203,8 @@ void	PolynomConverter::p_storeInMap()
 
 void	PolynomConverter::p_findExponents()
 {
-	long			tempExp;
-	std::string		exponents;
+	long		tempExp;
+	std::string	exponents;
 
 	for (std::pair<std::string const, double> &temp : p_polynom)
 	{

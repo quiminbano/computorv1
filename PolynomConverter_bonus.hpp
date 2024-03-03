@@ -6,12 +6,12 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/02 16:41:33 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/03 19:27:47 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef POLYNOMCONVERTER_HPP
-# define POLYNOMCONVERTER_HPP
+#ifndef POLYNOMCONVERTER_BONUS_HPP
+# define POLYNOMCONVERTER_BONUS_HPP
 
 # include <vector>
 # include <map>
@@ -42,8 +42,11 @@ private:
 	void			p_solveLinear();
 	void			p_solveCuadratic();
 	void			p_solveGradeCero();
+	void			p_printIrreductible(double number, bool toPrint, int grade);
 	double			p_sqrt(double number);
 	double			p_floor(double number);
+	long long		p_pow(long long number, long long exponent);
+	long long		p_gcd(long long numerator, long long denominator);
 
 public:
 	class EmptyInput : public std::exception

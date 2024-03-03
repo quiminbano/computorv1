@@ -6,11 +6,12 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/02 16:41:30 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/03 19:32:23 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "PolynomConverter.hpp"
+#include "PolynomConverter_bonus.hpp"
+#include <iomanip>
 
 PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
@@ -203,8 +204,8 @@ void	PolynomConverter::p_storeInMap()
 
 void	PolynomConverter::p_findExponents()
 {
-	long			tempExp;
-	std::string		exponents;
+	long		tempExp;
+	std::string	exponents;
 
 	for (std::pair<std::string const, double> &temp : p_polynom)
 	{
@@ -360,6 +361,7 @@ void	PolynomConverter::p_solveLinear()
 	result = expZero / expOne;
 	std::cout << "The solution is:" << std::endl;
 	std::cout << result << std::endl;
+	p_printIrreductible(result, true, 1);
 }
 
 void	PolynomConverter::p_solveCuadratic()
@@ -396,6 +398,8 @@ void	PolynomConverter::p_solveCuadratic()
 	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
 	std::cout << solution1 << std::endl;
 	std::cout << solution2 << std::endl;
+	p_printIrreductible(solution1, true, 2);
+	p_printIrreductible(solution2, false, 2);
 }
 
 void	PolynomConverter::p_solveGradeCero()
@@ -407,6 +411,44 @@ void	PolynomConverter::p_solveGradeCero()
 		std::cout << "The solution is: Each real number." << std::endl;
 	else
 		std::cout << "I have reached an impossible solution for X, I can't solve." << std::endl;
+}
+
+void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grade)
+{
+	long long	denominator;
+	long long	numerator;
+	long long	scale;
+	long long	commonDivisor;
+	double		decimal;
+
+	if (toPrint == true && grade == 1)
+		std::cout << "The solution as irreductible fraction is:" << std::endl;
+	else if (toPrint == true && grade == 2)
+		std::cout << "The solution as irreductible fractions are:" << std::endl;
+	if (p_floor(number) == number)
+	{
+		std::cout << number << std::endl;
+		return ;
+	}
+	if (number > p_floor(number))
+		decimal = number - p_floor(number);
+	else
+	{
+		decimal = p_floor(number) - number;
+		decimal = (1 + decimal);
+	}
+	scale = (std::to_string(decimal).size() - std::to_string(decimal).find(".") - 1);
+	denominator = p_pow(10, scale);
+	numerator = static_cast<long long>(number * static_cast<double>(denominator));
+	commonDivisor = p_gcd(numerator, denominator);
+	numerator /= commonDivisor;
+	denominator /= commonDivisor;
+	if (denominator < 0 && numerator > 0)
+	{
+		numerator *= -1;
+		denominator *= -1;
+	}
+	std::cout << numerator << "/" << denominator << std::endl;
 }
 
 double	PolynomConverter::p_sqrt(double squared)
@@ -448,6 +490,24 @@ double	PolynomConverter::p_floor(double number)
 	if (toReturn == number || toReturn > static_cast<double>(0))
 		return (toReturn);
 	return (toReturn - static_cast<double>(1));
+}
+
+long long	PolynomConverter::p_pow(long long number, long long exponent)
+{
+	double	toReturn;
+
+	toReturn = number;
+	for (long long index = 1; index < exponent; index++)
+		toReturn *= number;
+	return (toReturn);
+}
+
+long long	PolynomConverter::p_gcd(long long numerator, long long denominator)
+{
+	if (denominator == 0)
+		return (numerator);
+	else
+		return (p_gcd(denominator, (numerator % denominator)));
 }
 
 const char	*PolynomConverter::EmptyInput::what() const throw()

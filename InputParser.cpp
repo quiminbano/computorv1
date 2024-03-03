@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 20:24:10 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/03 14:58:06 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ string_vector	InputParser::p_getSplitted(std::string input)
 	{
 		if (match.position() != 0)
 			throw ParserError();
-		temp = copy.substr(0, (match.position() + match.length()));
+		temp = copy.substr(0, match.length());
 		if (!temp.compare("0"))
 			temp.append("*X^0");
 		split.push_back(temp);
