@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/04 15:56:29 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/04 17:34:16 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,5 +269,5 @@ string_vector	InputParser::p_mergeVectors(string_vector beforeEqual, string_vect
 
 const char	*InputParser::ParserError::what() const throw()
 {
-	return ("Error trying to return the parsed input");
+	return ("The input provided is not valid, I can't solve it.");
 }
