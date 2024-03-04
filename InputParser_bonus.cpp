@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/04 17:34:16 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/04 21:27:06 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,11 +175,13 @@ void	InputParser::p_fixSyntax(std::string &copy)
 
 void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 {
-	std::regex	pattern1("^[+-]?[0-9]+(:?\\.[0-9]+)?\\*?[xX]\\^?[+-]?[0-9]?(:?\\.[0-9]+)?");
+	std::regex	pattern1("^[+-]?[0-9]*(:?\\.[0-9]+)?\\*?[xX]\\^?[+-]?[0-9]?(:?\\.[0-9]+)?");
 	std::regex	pattern2("^[+-]?\\.[0-9]+");
+	std::regex	pattern3("^[+-]?[0-9]+(\\.[0-9]+)?\\*?(:?[xX]\\^[+-]?[0-9]+(:?\\.[0-9]+)?)?");
 	std::string	sub;
 	std::smatch	match1;
 	std::smatch	match2;
+	std::smatch	match3;
 
 	if (copy.size() == 0)
 		return ;
@@ -197,11 +199,13 @@ void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 			copy.insert(position, "^+");
 	}
 	sub = copy.substr(position + 1);
-	if ((copy.size() != 0 && sub.size() != 0) || std::regex_search(sub, match2, pattern2) == true)
+	if ((copy.size() != 0 && sub.size() != 0) && std::regex_search(sub, match2, pattern2) == true)
 	{
 		copy.insert((position + 1), "0");
 		return ;
 	}
+	if (std::regex_search(copy, match3, pattern3) == true)
+		return ;
 	throw ParserError();
 }
 
