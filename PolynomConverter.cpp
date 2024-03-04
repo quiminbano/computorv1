@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/03 17:49:05 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/04 09:59:46 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -445,7 +445,7 @@ double	PolynomConverter::p_floor(double number)
 		throw FloorError();
 	n = static_cast<long long>(number);
 	toReturn = static_cast<double>(n);
-	if (toReturn == number || toReturn > static_cast<double>(0))
+	if (toReturn == number || toReturn >= static_cast<double>(0))
 		return (toReturn);
 	return (toReturn - static_cast<double>(1));
 }

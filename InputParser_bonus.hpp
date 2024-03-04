@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:19:09 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/03 18:16:50 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/04 12:41:21 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ private:
 
 	string_vector	p_getSplitted(std::string input);
 	void			p_fixSyntax(std::string &copy);
+	void			p_checkNext(std::string &copy, ptrdiff_t position);
 	int				p_justspaces(std::string temp);
 	void			p_validateVectors(string_vector beforeEqual, string_vector afterEqual);
 	bool			p_validateInput(std::string input);

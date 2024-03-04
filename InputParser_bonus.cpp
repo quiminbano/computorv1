@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/03 17:02:58 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/04 15:56:29 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,14 @@ string_vector	InputParser::p_getSplitted(std::string input)
 	
 	copy = input;
 	copy.erase((std::remove_if(copy.begin(), copy.end(), [](unsigned char c){return (std::isspace(c));})), copy.end());
-	p_fixSyntax(copy);
+	try
+	{
+		p_fixSyntax(copy);
+	}
+	catch(const std::exception& e)
+	{
+		throw ParserError();
+	}
 	while (std::regex_search(copy, match, pattern))
 	{
 		if (match.position() != 0)
@@ -119,7 +126,14 @@ string_vector	InputParser::p_getSplitted(std::string input)
 			temp.append("*X^0");
 		split.push_back(temp);
 		copy = match.suffix().str();
-		p_fixSyntax(copy);
+		try
+		{
+			p_fixSyntax(copy);
+		}
+		catch(const std::exception& e)
+		{
+			throw ParserError();
+		}
 	}
 	if (copy.size() != 0)
 		throw ParserError();
@@ -129,11 +143,13 @@ string_vector	InputParser::p_getSplitted(std::string input)
 void	InputParser::p_fixSyntax(std::string &copy)
 {
 	std::regex	pattern1("^(\\+X|\\+x|\\-X|\\-x)");
-	std::regex	pattern2("^[+-]?[0-9]+(:?\\.[0-9]+)?");
-	std::regex	pattern3("^[+-]?[0-9]+(:?\\.[0-9]+)?\\*[xX]");
+	std::regex	pattern2("^(\\+\\.|\\-\\.|\\.)");
+	std::regex	pattern3("^[+-]?[0-9]+(:?\\.[0-9]+)?");
+	std::regex	pattern4("^[+-]?[0-9]+(:?\\.[0-9]+)?\\*[xX]");
 	std::smatch	match1;
 	std::smatch	match2;
 	std::smatch	match3;
+	std::smatch	match4;
 
 	if (copy[0] == 'X' || copy[0] == 'x')
 		copy.insert(0, "1*");
@@ -141,19 +157,52 @@ void	InputParser::p_fixSyntax(std::string &copy)
 		copy.insert(1, "1*");
 	if (std::regex_search(copy, match2, pattern2) == true)
 	{
-		if (copy[match2.length()] == 'x' || copy[match2.length()] == 'X')
-			copy.insert(match2.length(), "*");
-		if (copy[match2.length()] != '*')
-			copy.insert(match2.length(), "*X^0");
+		if (copy[0] == '+' || copy[0] == '-')
+			copy.insert(1, "0");
+		else
+			copy.insert(0, "0");
 	}
 	if (std::regex_search(copy, match3, pattern3) == true)
 	{
-		if (copy[match3.length()] != '^' && (std::isdigit(copy[match3.length()]) || \
-			copy[match3.length()] == '+' || copy[match3.length()] == '-'))
-			copy.insert(match3.length(), "^");
-		else if (copy[match3.length()] != '^')
-			copy.insert(match2.length(), "^0");
+		if (copy[match3.length()] == 'x' || copy[match3.length()] == 'X')
+			copy.insert(match3.length(), "*");
+		if (copy[match3.length()] != '*')
+			copy.insert(match3.length(), "*X^0");
 	}
+	if (std::regex_search(copy, match4, pattern4) == true)
+		p_checkNext(copy, match4.length());
+}
+
+void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
+{
+	std::regex	pattern1("^[+-]?[0-9]+(:?\\.[0-9]+)?\\*?[xX]\\^?[+-]?[0-9]?(:?\\.[0-9]+)?");
+	std::regex	pattern2("^[+-]?\\.[0-9]+");
+	std::string	sub;
+	std::smatch	match1;
+	std::smatch	match2;
+
+	if (copy.size() == 0)
+		return ;
+	sub = copy.substr(static_cast<size_t>(position));
+	if ((copy.size() != 0 && sub.size() == 0) || std::regex_search(sub, match1, pattern1) == true)
+	{
+		copy.insert(static_cast<size_t>(position), "^1");
+		return ;
+	}
+	if (copy[position] != '^' && (std::isdigit(copy[position]) || copy[position] == '+' || copy[position] == '-' || copy[position] == '.'))
+	{
+		if (copy[position] == '+' || copy[position] == '-')
+			copy.insert(position, "^");
+		else
+			copy.insert(position, "^+");
+	}
+	sub = copy.substr(position + 1);
+	if ((copy.size() != 0 && sub.size() != 0) || std::regex_search(sub, match2, pattern2) == true)
+	{
+		copy.insert((position + 1), "0");
+		return ;
+	}
+	throw ParserError();
 }
 
 int	InputParser::p_justspaces(std::string temp)

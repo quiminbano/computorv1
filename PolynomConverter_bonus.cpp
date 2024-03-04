@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/03 19:32:23 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/04 10:59:57 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,7 +361,7 @@ void	PolynomConverter::p_solveLinear()
 	result = expZero / expOne;
 	std::cout << "The solution is:" << std::endl;
 	std::cout << result << std::endl;
-	p_printIrreductible(result, true, 1);
+	p_printIrreductible(result, true, 1, expZero, expOne);
 }
 
 void	PolynomConverter::p_solveCuadratic()
@@ -398,8 +398,8 @@ void	PolynomConverter::p_solveCuadratic()
 	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
 	std::cout << solution1 << std::endl;
 	std::cout << solution2 << std::endl;
-	p_printIrreductible(solution1, true, 2);
-	p_printIrreductible(solution2, false, 2);
+	p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
+	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 }
 
 void	PolynomConverter::p_solveGradeCero()
@@ -413,10 +413,10 @@ void	PolynomConverter::p_solveGradeCero()
 		std::cout << "I have reached an impossible solution for X, I can't solve." << std::endl;
 }
 
-void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grade)
+void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grade, double numerator, double denominator)
 {
-	long long	denominator;
-	long long	numerator;
+	long long	down;
+	long long	up;
 	long long	scale;
 	long long	commonDivisor;
 	double		decimal;
@@ -430,25 +430,42 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 		std::cout << number << std::endl;
 		return ;
 	}
-	if (number > p_floor(number))
-		decimal = number - p_floor(number);
+	if (p_floor(numerator) == numerator && p_floor(denominator) == denominator)
+	{
+		up = static_cast<long long>(numerator);
+		down = static_cast<long long>(denominator);
+	}
 	else
 	{
-		decimal = p_floor(number) - number;
-		decimal = (1 + decimal);
+		if (number > p_floor(number))
+		{
+			decimal = number - p_floor(number);
+		}
+		else
+		{
+			decimal = p_floor(number) - number;
+			decimal = (1 + decimal);
+		}
+		scale = (std::to_string(decimal).size() - std::to_string(decimal).find(".") - 1);
+		down = p_pow(10, scale);
+		if (down >= 1000000)
+			down = 10000000000000000;
+		up = static_cast<long long>(number * static_cast<double>(down));
+		if (static_cast<double>(up) < (number * static_cast<double>(down)))
+		{
+			std::cout << "An overflow happened trying to obtain the irreductible solution, I can't solve it." << std::endl;
+			return ;
+		}
 	}
-	scale = (std::to_string(decimal).size() - std::to_string(decimal).find(".") - 1);
-	denominator = p_pow(10, scale);
-	numerator = static_cast<long long>(number * static_cast<double>(denominator));
-	commonDivisor = p_gcd(numerator, denominator);
-	numerator /= commonDivisor;
-	denominator /= commonDivisor;
-	if (denominator < 0 && numerator > 0)
+	commonDivisor = p_gcd(up, down);
+	up /= commonDivisor;
+	down /= commonDivisor;
+	if (down < 0 && up > 0)
 	{
-		numerator *= -1;
-		denominator *= -1;
+		down *= -1;
+		up *= -1;
 	}
-	std::cout << numerator << "/" << denominator << std::endl;
+	std::cout << up << "/" << down << std::endl;
 }
 
 double	PolynomConverter::p_sqrt(double squared)
@@ -487,7 +504,7 @@ double	PolynomConverter::p_floor(double number)
 		throw FloorError();
 	n = static_cast<long long>(number);
 	toReturn = static_cast<double>(n);
-	if (toReturn == number || toReturn > static_cast<double>(0))
+	if (toReturn == number || toReturn >= static_cast<double>(0))
 		return (toReturn);
 	return (toReturn - static_cast<double>(1));
 }
