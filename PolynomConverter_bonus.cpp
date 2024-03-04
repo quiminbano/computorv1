@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/04 10:59:57 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/04 18:25:11 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,17 +72,24 @@ void	PolynomConverter::printPolynom()
 				std::cout << "-";
 			std::cout << " ";
 			if (p_polynom.find(model)->second < 0)
-				std::cout << (p_polynom.find(model)->second * -1) << " * ";
+				std::cout << (p_polynom.find(model)->second * -1);
 			else
-				std::cout << (p_polynom.find(model)->second) << " * ";
+				std::cout << (p_polynom.find(model)->second);
 		}
 		else
 		{
 			if (idx > p_minExp)
 				std::cout << "+ ";
-			std::cout << 0 << " * ";
+			std::cout << 0;
 		}
-		std::cout << model;
+		if (model.compare("X^0"))
+		{
+			std::cout << " * ";
+			if (!model.compare("X^1"))
+				std::cout << "X";
+			else
+				std::cout << model;
+		}
 		std::cout << " ";
 		idx++;
 	}
