@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 00:22:40 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/01 16:00:21 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/05 21:49:49 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ int	main(int argc, char **argv)
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
+		return (1);
 	}
 	return (0);
 }

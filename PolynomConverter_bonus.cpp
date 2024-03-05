@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/04 18:25:11 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/05 22:44:52 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 
 PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
-	
+	p_hasFailedSolving = false;
 }
 
 PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
 	p_polynom.clear();
+	p_hasFailedSolving = false;
 	p_storeInMap();
 	p_findExponents();
 }
@@ -36,12 +37,13 @@ void	PolynomConverter::initializeInput(string_vector input)
 	p_hasInput = true;
 	p_hasInputOverflow = false;
 	p_hasFractionalExponent = false;
+	p_hasFailedSolving = false;
 	p_polynom.clear();
 	p_storeInMap();
 	p_findExponents();
 }
 
-void	PolynomConverter::printPolynom()
+void	PolynomConverter::printPolynom(int state)
 {
 	long		idx;
 	std::string	coefficient;
@@ -55,7 +57,8 @@ void	PolynomConverter::printPolynom()
 		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
 		return ;
 	}
-	std::cout << "Reduced form: ";
+	if (state == 0)
+		std::cout << "Reduced form: ";
 	while (idx <= p_maxExp)
 	{
 		model.clear();
@@ -114,16 +117,19 @@ void	PolynomConverter::solvePolynom()
 	if (p_hasInputOverflow == true)
 	{
 		std::cout << "Some numbers overflowed during the conversion of the polymon, I can't solve." << std::endl;
+		p_hasFailedSolving = true;
 		return ;
 	}
 	if (p_minExp < 0)
 	{
 		std::cout << "The polynom has negative exponents, I can't solve." << std::endl;
+		p_hasFailedSolving = true;
 		return ;
 	}
 	if (p_maxExp > 2)
 	{
 		std::cout << "The polynomial degree is strictly greater than 2, I can't solve." << std::endl;
+		p_hasFailedSolving = true;
 		return ;
 	}
 	switch (p_grade)
@@ -140,6 +146,16 @@ void	PolynomConverter::solvePolynom()
 	}
 }
 
+bool	PolynomConverter::getFractionalExponentFlag() const
+{
+	return (p_hasFractionalExponent);
+}
+
+bool	PolynomConverter::getHasSolutionFailed() const
+{
+	return (p_hasFailedSolving);
+}
+
 void	PolynomConverter::clear()
 {
 	p_input.clear();
@@ -150,6 +166,14 @@ void	PolynomConverter::clear()
 	p_hasFractionalExponent = false;
 	p_minExp = 0;
 	p_maxExp = 0;
+}
+
+void	PolynomConverter::printProcess()
+{
+	if (p_hasInput == false)
+		throw EmptyInput();
+	if (p_hasFractionalExponent == true)
+		return ;
 }
 
 void	PolynomConverter::p_storeInMap()
@@ -398,6 +422,7 @@ void	PolynomConverter::p_solveCuadratic()
 	if (discriminant < static_cast<double>(0))
 	{
 		std::cout << "Discriminant is strictly negative, I can't solve." << std::endl;
+		p_hasFailedSolving = true;
 		return ;
 	}
 	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
@@ -417,7 +442,10 @@ void	PolynomConverter::p_solveGradeCero()
 	if (a == static_cast<double>(0))
 		std::cout << "The solution is: Each real number." << std::endl;
 	else
+	{
 		std::cout << "I have reached an impossible solution for X, I can't solve." << std::endl;
+		p_hasFailedSolving = true;
+	}
 }
 
 void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grade, double numerator, double denominator)
@@ -456,7 +484,7 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 		scale = (std::to_string(decimal).size() - std::to_string(decimal).find(".") - 1);
 		down = p_pow(10, scale);
 		if (down >= 1000000)
-			down = 10000000000000000;
+			down = 1000000000000000;
 		up = static_cast<long long>(number * static_cast<double>(down));
 		if (static_cast<double>(up) < (number * static_cast<double>(down)))
 		{
@@ -536,7 +564,7 @@ long long	PolynomConverter::p_gcd(long long numerator, long long denominator)
 
 const char	*PolynomConverter::EmptyInput::what() const throw()
 {
-	return ("No input provided");
+	return ("No input provided, I can't solve it.");
 }
 
 const char	*PolynomConverter::FloorError::what() const throw()

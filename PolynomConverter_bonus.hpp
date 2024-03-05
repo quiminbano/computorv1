@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/04 10:05:25 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/05 22:45:16 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ private:
 	bool							p_hasInput;
 	bool							p_hasInputOverflow;
 	bool							p_hasFractionalExponent;
+	bool							p_hasFailedSolving;
 	std::map<std::string, double>	p_polynom;
 	long							p_grade;
 	long							p_minExp;
@@ -65,9 +66,12 @@ public:
 	~PolynomConverter();
 
 	void	initializeInput(string_vector input);
-	void	printPolynom();
+	void	printPolynom(int state);
+	bool	getFractionalExponentFlag() const;
+	bool	getHasSolutionFailed() const;
 	void	printPolynomGrade();
 	void	solvePolynom();
+	void	printProcess();
 	void	clear();
 };
 

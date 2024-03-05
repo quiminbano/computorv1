@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/04 09:59:46 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/05 21:21:29 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -452,7 +452,7 @@ double	PolynomConverter::p_floor(double number)
 
 const char	*PolynomConverter::EmptyInput::what() const throw()
 {
-	return ("No input provided");
+	return ("No input provided, I can't solve it.");
 }
 
 const char	*PolynomConverter::FloorError::what() const throw()

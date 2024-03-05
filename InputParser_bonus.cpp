@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/05 17:09:06 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/05 18:21:01 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ void	InputParser::p_fixSyntax(std::string &copy)
 	std::smatch	match4;
 
 	if (copy[0] == 'X' || copy[0] == 'x')
-		copy.insert(0, "1*");
+		copy.insert(0, "+1*");
 	else if (std::regex_search(copy, match1, pattern1) == true)
 		copy.insert(1, "1*");
 	if (std::regex_search(copy, match2, pattern2) == true)
