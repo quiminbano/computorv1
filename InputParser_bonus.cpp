@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/04 21:27:06 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/05 17:09:06 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,13 +102,17 @@ string_vector	InputParser::getInput()
 string_vector	InputParser::p_getSplitted(std::string input)
 {
 	string_vector				split;
-	std::regex					pattern("[+-]?[0-9]+(\\.[0-9]+)?\\*?(:?[xX]\\^[+-]?[0-9]+(:?\\.[0-9]+)?)?");
-	std::smatch					match;
+	std::regex					pattern1("[+-]?[0-9]+(\\.[0-9]+)?\\*?(:?[xX]\\^[+-]?[0-9]+(:?\\.[0-9]+)?)?");
+	std::regex					pattern2("^[+-][0-9]+(\\.[0-9]+)?\\*[xX]\\^[+-]?[0-9]+(:?\\.[0-9]+)?");
+	std::smatch					match1;
+	std::smatch					match2;
 	std::string					copy;
 	std::string					temp;
 	
 	copy = input;
 	copy.erase((std::remove_if(copy.begin(), copy.end(), [](unsigned char c){return (std::isspace(c));})), copy.end());
+	if (std::isdigit(copy[0]))
+		copy.insert(0, "+");
 	try
 	{
 		p_fixSyntax(copy);
@@ -117,15 +121,17 @@ string_vector	InputParser::p_getSplitted(std::string input)
 	{
 		throw ParserError();
 	}
-	while (std::regex_search(copy, match, pattern))
+	while (std::regex_search(copy, match1, pattern1))
 	{
-		if (match.position() != 0)
+		if (match1.position() != 0)
 			throw ParserError();
-		temp = copy.substr(0, match.length());
+		temp = copy.substr(0, match1.length());
 		if (!temp.compare("0"))
 			temp.append("*X^0");
+		if (std::regex_match(temp, match2, pattern2) == false)
+			throw ParserError();
 		split.push_back(temp);
-		copy = match.suffix().str();
+		copy = match1.suffix().str();
 		try
 		{
 			p_fixSyntax(copy);
@@ -160,10 +166,12 @@ void	InputParser::p_fixSyntax(std::string &copy)
 		if (copy[0] == '+' || copy[0] == '-')
 			copy.insert(1, "0");
 		else
-			copy.insert(0, "0");
+			copy.insert(0, "+0");
 	}
 	if (std::regex_search(copy, match3, pattern3) == true)
 	{
+		if (copy[match3.length()] == '.')
+			return ;
 		if (copy[match3.length()] == 'x' || copy[match3.length()] == 'X')
 			copy.insert(match3.length(), "*");
 		if (copy[match3.length()] != '*')
@@ -191,6 +199,8 @@ void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 		copy.insert(static_cast<size_t>(position), "^1");
 		return ;
 	}
+	sub.clear();
+	sub = copy.substr(position + 1);
 	if (copy[position] != '^' && (std::isdigit(copy[position]) || copy[position] == '+' || copy[position] == '-' || copy[position] == '.'))
 	{
 		if (copy[position] == '+' || copy[position] == '-')
@@ -198,10 +208,14 @@ void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 		else
 			copy.insert(position, "^+");
 	}
+	sub.clear();
 	sub = copy.substr(position + 1);
 	if ((copy.size() != 0 && sub.size() != 0) && std::regex_search(sub, match2, pattern2) == true)
 	{
-		copy.insert((position + 1), "0");
+		if ((copy[position + 1] == '+' || copy[position + 1] == '-'))
+			copy.insert((position + 2), "0");
+		else
+			copy.insert((position + 1), "0");
 		return ;
 	}
 	if (std::regex_search(copy, match3, pattern3) == true)
