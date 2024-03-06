@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:19:09 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 10:13:43 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 11:08:44 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ private:
 
 	std::string		p_rawData;
 	string_vector	p_input;
+	string_vector	p_before;
+	string_vector	p_after;
 	bool			p_hasInput;
 	bool			p_hasFailed;
 	
@@ -56,6 +58,8 @@ public:
 	void			input(int argc, char **argv);
 	bool			fail() const;
 	string_vector	getInput();
+	string_vector	getBefore();
+	string_vector	getAfter();
 };
 
 #endif

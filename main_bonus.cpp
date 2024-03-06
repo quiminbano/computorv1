@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 00:22:40 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 10:04:59 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 12:08:51 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ int	main(int argc, char **argv)
 	InputParser			parser(argc, argv);
 	PolynomConverter	converter;
 	string_vector		input;
+	string_vector		before;
+	string_vector		after;
 	std::string			userInputOptions;
 
 	if (parser.fail() == true)
@@ -35,7 +37,9 @@ int	main(int argc, char **argv)
 		std::cerr << e.what() << std::endl;
 		return (1);
 	}
-	converter.initializeInput(input);
+	before = parser.getBefore();
+	after = parser.getAfter();
+	converter.initializeInput(input, before, after);
 	try
 	{
 		converter.printPolynom();

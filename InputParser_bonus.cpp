@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 10:33:47 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 11:15:10 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 
 InputParser::InputParser() : p_hasInput(false), p_hasFailed(true)
 {
-	
+	p_rawData.clear();
+	p_before.clear();
+	p_after.clear();
 }
 
 InputParser::~InputParser()
@@ -28,6 +30,8 @@ InputParser::InputParser(int argc, char **argv) : p_hasInput(false), p_hasFailed
 	if (!argv || argc == 1)
 		return ;
 	p_rawData.clear();
+	p_before.clear();
+	p_after.clear();
 	for (size_t i = 1; argv[i]; i++)
 	{
 		p_rawData.append(argv[i]);
@@ -43,6 +47,8 @@ void	InputParser::input(int argc, char **argv)
 	if (!argv || argc == 1)
 		return ;
 	p_rawData.clear();
+	p_before.clear();
+	p_after.clear();
 	for (size_t i = 1; argv[i]; i++)
 	{
 		p_rawData.append(argv[i]);
@@ -93,7 +99,9 @@ string_vector	InputParser::getInput()
 		if (p_justspaces(afterEqualString))
 			throw ParserError();
 		beforeEqualVector = p_getSplitted(beforeEqualString);
+		p_before = beforeEqualVector;
 		afterEqualVector = p_getSplitted(afterEqualString);
+		p_after = afterEqualVector;
 		p_validateVectors(beforeEqualVector, afterEqualVector);
 	}
 	catch(const std::exception& e)
@@ -101,6 +109,16 @@ string_vector	InputParser::getInput()
 		throw ParserError();
 	}
 	return (p_mergeVectors(beforeEqualVector, afterEqualVector));
+}
+
+string_vector	InputParser::getBefore()
+{
+	return (p_before);
+}
+
+string_vector	InputParser::getAfter()
+{
+	return (p_after);
 }
 
 string_vector	InputParser::p_getSplitted(std::string input)

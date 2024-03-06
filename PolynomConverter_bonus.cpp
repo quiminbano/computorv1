@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 10:58:49 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 19:13:27 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,16 @@ PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(fal
 	p_hasFailedSolving = false;
 }
 
-PolynomConverter::PolynomConverter(string_vector input) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
+PolynomConverter::PolynomConverter(string_vector input, string_vector before, string_vector after) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
 	p_polynom.clear();
+	p_before = before;
+	p_after = after;
 	p_hasFailedSolving = false;
+	p_solution1 = 0;
+	p_solution2 = 0;
+	p_discriminant = 0;
+	p_rootDiscriminant = 0;
 	p_storeInMap();
 	p_findExponents();
 }
@@ -31,9 +37,15 @@ PolynomConverter::~PolynomConverter()
 	
 }
 
-void	PolynomConverter::initializeInput(string_vector input)
+void	PolynomConverter::initializeInput(string_vector input, string_vector before, string_vector after)
 {
 	p_input = input;
+	p_before = before;
+	p_after = after;
+	p_solution1 = 0;
+	p_solution2 = 0;
+	p_discriminant = 0;
+	p_rootDiscriminant = 0;
 	p_hasInput = true;
 	p_hasInputOverflow = false;
 	p_hasFractionalExponent = false;
@@ -55,6 +67,7 @@ void	PolynomConverter::printPolynom()
 	if (p_hasFractionalExponent == true)
 	{
 		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		p_hasFailedSolving = true;
 		return ;
 	}
 	std::cout << "Reduced form: ";
@@ -158,6 +171,8 @@ bool	PolynomConverter::getHasSolutionFailed() const
 void	PolynomConverter::clear()
 {
 	p_input.clear();
+	p_before.clear();
+	p_after.clear();
 	p_polynom.clear();
 	p_grade = 0;
 	p_hasInput = false;
@@ -165,6 +180,10 @@ void	PolynomConverter::clear()
 	p_hasFractionalExponent = false;
 	p_minExp = 0;
 	p_maxExp = 0;
+	p_solution1 = 0;
+	p_solution2 = 0;
+	p_discriminant = 0;
+	p_rootDiscriminant = 0;
 }
 
 void	PolynomConverter::printProcess()
@@ -173,6 +192,12 @@ void	PolynomConverter::printProcess()
 		throw EmptyInput();
 	if (p_hasFractionalExponent == true)
 		return ;
+	p_printFirstStep();
+	p_printSecondStep();
+	if (p_grade == 1)
+		p_printGradeOneSteps();
+	else if (p_grade == 2)
+		p_printGradeTwoSteps();
 }
 
 void	PolynomConverter::p_storeInMap()
@@ -397,6 +422,7 @@ void	PolynomConverter::p_solveLinear()
 	else
 		std::cout << static_cast<double>(0) << std::endl;
 	p_printIrreductible(result, true, 1, expZero, expOne);
+	p_solution1 = result;
 }
 
 void	PolynomConverter::p_solveCuadratic()
@@ -423,12 +449,18 @@ void	PolynomConverter::p_solveCuadratic()
 	if (iterC != p_polynom.end())
 		c = p_polynom.find("X^0")->second;
 	discriminant = ((b * b) - (static_cast<double>(4) * a * c));
+	if (discriminant == p_floor(static_cast<double>(0)))
+		discriminant = 0;
+	p_discriminant = discriminant;
 	if (discriminant < static_cast<double>(0))
 	{
 		std::cout << "Discriminant is strictly negative, I can't solve." << std::endl;
 		p_hasFailedSolving = true;
 		return ;
 	}
+	p_rootDiscriminant = p_sqrt(discriminant);
+	if (p_rootDiscriminant == p_floor(static_cast<double>(0)))
+		p_rootDiscriminant = 0;
 	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	solution2 = (((b * -1) + (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
@@ -442,6 +474,8 @@ void	PolynomConverter::p_solveCuadratic()
 		std::cout << static_cast<double>(0) << std::endl;
 	p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
+	p_solution1 = solution1;
+	p_solution2 = solution2;
 }
 
 void	PolynomConverter::p_solveGradeCero()
@@ -574,6 +608,262 @@ long long	PolynomConverter::p_gcd(long long numerator, long long denominator)
 	else
 		return (p_gcd(denominator, (numerator % denominator)));
 }
+
+vector_pair	PolynomConverter::p_getVectorPair(string_vector input)
+{
+	double			tempNumber;
+	double			tempExponent;
+	double			rounded;
+	string_vector	split;
+	std::string		tempString;
+	pair_t			inputContainer;
+	vector_pair		toReturn;
+
+	for (std::string &iter : input)
+	{
+		split.clear();
+		split = p_split(iter, "*");
+		if (split[1][0] == 'x')
+			split[1][0] = 'X';
+		if (!split[1].compare("X"))
+			split[1].append("^0");
+		if (split[1][2] == '+')
+			split[1].erase(2, 1);
+		try
+		{
+			tempNumber = std::stod(split[0]);
+			if (tempNumber == p_floor(static_cast<double>(0)))
+				tempNumber = 0;
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempNumber = static_cast<double>(0);
+		}
+		try
+		{
+			tempExponent = std::stod(split[1].substr(2));
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+			tempExponent = static_cast<double>(0);
+		}
+		try
+		{
+			rounded = p_floor(tempExponent);
+		}
+		catch(const std::exception &e)
+		{
+			p_hasInputOverflow = true;
+		}
+		if (rounded != tempExponent)
+		{
+			p_hasFractionalExponent = true;
+		}
+		tempString.clear();
+		tempString.append("X^" + std::to_string(static_cast<long long>(rounded)));
+		inputContainer = std::make_pair(tempString, tempNumber);
+		toReturn.push_back(inputContainer);
+	}
+	return (toReturn);
+}
+
+void	PolynomConverter::p_printFirstStep()
+{
+	vector_pair	beforeEqual;
+	vector_pair	afterEqual;
+	vector_pair	afterProcess;
+
+	std::cout << std::endl << "This is the equation:" << std::endl << std::endl;
+	beforeEqual = p_getVectorPair(p_before);
+	afterEqual = p_getVectorPair(p_after);
+	p_printPairs(beforeEqual);
+	std::cout << " = ";
+	p_printPairs(afterEqual);
+	std::cout << std::endl << std::endl << "After reaarranging all the term in the left side of the equation, we get: " << std::endl << std::endl;
+	afterProcess = p_getVectorPair(p_input);
+	p_printPairs(afterProcess);
+	std::cout << "= 0" << std::endl;
+}
+
+void	PolynomConverter::p_printSecondStep()
+{
+	std::cout << std::endl << "If we reduce the term of the equation, we get:" << std::endl << std::endl;
+	p_printMap();
+	std::cout << "= 0" << std::endl << std::endl;
+}
+
+void	PolynomConverter::p_printPairs(vector_pair paired)
+{
+	std::string	coefficient;
+	size_t		idx;
+
+	idx = 0;
+	if (p_hasInput == false)
+		throw EmptyInput();
+	if (p_hasFractionalExponent == true)
+	{
+		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		return ;
+	}
+	for (pair_t &iter : paired)
+	{
+		coefficient = std::to_string(iter.second);
+		if (coefficient[0] != '-' && idx != 0)
+			std::cout << "+";
+		else if (coefficient[0] != '-' && idx == 0)
+			std::cout << "";
+		else
+			std::cout << "-";
+		std::cout << " ";
+		if (iter.second < 0)
+			std::cout << (iter.second * -1);
+		else
+			std::cout << (iter.second);
+		if (iter.first.compare("X^0"))
+		{
+			std::cout << " * ";
+			if (!iter.first.compare("X^1"))
+				std::cout << "X";
+			else
+				std::cout << iter.first;
+		}
+		std::cout << " ";
+		idx++;
+	}
+}
+
+void	PolynomConverter::p_printMap()
+{
+	std::string	coefficient;
+	size_t		idx;
+
+	idx = 0;
+	if (p_hasInput == false)
+		throw EmptyInput();
+	if (p_hasFractionalExponent == true)
+	{
+		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		return ;
+	}
+	for (std::pair<const std::string, double> &iter : p_polynom)
+	{
+		coefficient = std::to_string(iter.second);
+		if (coefficient[0] != '-' && idx != 0)
+			std::cout << "+";
+		else if (coefficient[0] != '-' && idx == 0)
+			std::cout << "";
+		else
+			std::cout << "-";
+		std::cout << " ";
+		if (iter.second < 0)
+			std::cout << (iter.second * -1);
+		else
+			std::cout << (iter.second);
+		if (iter.first.compare("X^0"))
+		{
+			std::cout << " * ";
+			if (!iter.first.compare("X^1"))
+				std::cout << "X";
+			else
+				std::cout << iter.first;
+		}
+		std::cout << " ";
+		idx++;
+	}
+}
+
+void	PolynomConverter::p_printGradeOneSteps()
+{
+	double	numerator;
+	double	denominator;
+	
+	std::cout << "We pass the constants to the right side:" << std::endl << std::endl;
+	numerator = p_polynom.find("X^0")->second;
+	denominator = p_polynom.find("X^1")->second;
+	if (denominator < 0)
+		std::cout << " - " << (denominator * -1) << " = ";
+	else
+		std::cout << " " << denominator << " = ";
+	if (numerator < 0)
+		std::cout << " " << (numerator * -1) << std::endl << std::endl;
+	else
+		std::cout << " - " << numerator << std::endl << std::endl;
+	std::cout << "Isolating X, we get:" << std::endl << std::endl;
+	std::cout << " X = ";
+	if (numerator > 0 && denominator < 0)
+		denominator *= static_cast<double>(-1);
+	else if (numerator > 0 && denominator > 0)
+		numerator *= static_cast<double>(-1);
+	else if (numerator < 0 && denominator < 0)
+	{
+		numerator *= static_cast<double>(-1);
+		denominator *= static_cast<double>(-1);
+	}
+	if (numerator == p_floor(static_cast<double>(0)))
+		numerator = 0;
+	if (numerator < 0)
+	{
+		std::cout << "- ";
+		numerator *= -1;
+	}
+	std::cout << numerator << "/" << denominator << std::endl << std::endl;
+	std::cout << "Then, the result is:" << std::endl << std::endl;
+	std::cout << " " << p_solution1 << std::endl << std::endl;
+}
+
+void	PolynomConverter::p_printGradeTwoSteps()
+{
+	double	a;
+	double	b;
+	double	c;
+
+	std::cout << std::endl << "A second grade ecuation has the following form:" << std::endl << std::endl;
+	std::cout << "c + b * X + a * X^2" << std::endl << std::endl;
+	a = p_polynom.find("X^2")->second;
+	if (p_polynom.find("X^1") != p_polynom.end())
+		b = p_polynom.find("X^1")->second;
+	else
+		b = 0;
+	if (p_polynom.find("X^0") != p_polynom.end())
+		c = p_polynom.find("X^0")->second;
+	else
+		c = 0;
+	if (b == p_floor(static_cast<double>(0)))
+		b = 0;
+	if (c == p_floor(static_cast<double>(0)))
+		c = 0;
+	std::cout << "In this case, the equation can be written as follows:" << std::endl << std::endl << " ";
+	if (c < 0)
+	{
+		std::cout << "- ";
+		std::cout << (c * -1) << " ";
+	}
+	else
+		std::cout << c << " ";
+	if (b < 0)
+	{
+		std::cout << "- ";
+		std::cout << "+ " << (b * -1) << " ";
+	}
+	else
+		std::cout << b << " ";
+	if (a < 0)
+	{
+		std::cout << "- ";
+		std::cout << "+ " << (a * -1) << " = 0" << std::endl << std::endl;
+	}
+	else
+		std::cout << a << " = 0" << std::endl << std::endl;
+	std::cout << "The equations to solve a cuadratic equations are:" << std::endl << std::endl;
+	std::cout << "X1 = (- b - sqrt(b^2 * -(4 * a * c))/(2 * a)) (solution1)" << std::endl;
+	std::cout << "X2 = (- b + sqrt(b^2 * -(4 * a * c))/(2 * a)) (solution2)" << std::endl;
+	std::cout << "Where: (4 * a * c) is the discriminant." << std::endl << std::endl;
+	std::cout << "Replacing the values of a, b and c, we get:" << std::endl << std::endl;
+	std::cout << "X1 = (" << (b * -1) << " - ";
+}
+
 
 const char	*PolynomConverter::EmptyInput::what() const throw()
 {
