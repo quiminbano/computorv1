@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 21:16:55 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 22:35:13 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -464,14 +464,12 @@ void	PolynomConverter::p_solveQuadratic()
 	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	solution2 = (((b * -1) + (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
-	if (solution1 != p_floor(static_cast<double>(0)))
-		std::cout << solution1 << std::endl;
-	else
-		std::cout << static_cast<double>(0) << std::endl;
-	if (solution2 != p_floor(static_cast<double>(0)))
-		std::cout << solution2 << std::endl;
-	else
-		std::cout << static_cast<double>(0) << std::endl;
+	if (solution1 == p_floor(static_cast<double>(0)))
+		solution1 = static_cast<double>(0);
+	if (solution2 == p_floor(static_cast<double>(0)))
+		solution2 = static_cast<double>(0);
+	std::cout << solution1 << std::endl;
+	std::cout << solution2 << std::endl;
 	p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 	p_solution1 = solution1;
@@ -820,7 +818,7 @@ void	PolynomConverter::p_printGradeTwoSteps()
 	double	c;
 
 	std::cout << std::endl << "A second grade ecuation has the following form:" << std::endl << std::endl;
-	std::cout << "c + b * X + a * X^2" << std::endl << std::endl;
+	std::cout << " c + b * X + a * X^2 = 0" << std::endl << std::endl;
 	a = p_polynom.find("X^2")->second;
 	if (p_polynom.find("X^1") != p_polynom.end())
 		b = p_polynom.find("X^1")->second;
@@ -836,35 +834,75 @@ void	PolynomConverter::p_printGradeTwoSteps()
 		c = 0;
 	std::cout << "In this case, the equation can be written as follows:" << std::endl << std::endl << " ";
 	if (c < 0)
-	{
-		std::cout << "- ";
-		std::cout << (c * -1) << " ";
-	}
+		std::cout << " - " << (c * -1) << " ";
 	else
-		std::cout << c << " ";
+		std::cout << " " << c << " ";
 	if (b < 0)
-	{
-		std::cout << "- ";
-		std::cout << "+ " << (b * -1) << " ";
-	}
+		std::cout << "- " << (b * -1) << " * X ";
 	else
-		std::cout << b << " ";
+		std::cout << "+ " << b << " * X ";
 	if (a < 0)
-	{
-		std::cout << "- ";
-		std::cout << "+ " << (a * -1) << " = 0" << std::endl << std::endl;
-	}
+		std::cout << "- " << (a * -1) << " * X^2 = 0" << std::endl << std::endl;
 	else
-		std::cout << a << " = 0" << std::endl << std::endl;
-	std::cout << "The equations to solve a quadratic equations are:" << std::endl << std::endl;
-	std::cout << "X1 = (- b - sqrt(b^2 * -(4 * a * c))/(2 * a)) (solution1)" << std::endl;
-	std::cout << "X2 = (- b + sqrt(b^2 * -(4 * a * c))/(2 * a)) (solution2)" << std::endl;
+		std::cout << "+ " << a << " * X^2 = 0" << std::endl << std::endl;
+	std::cout << "The equations to solve the possible values for X in a quadratic equation are:" << std::endl << std::endl;
+	std::cout << "X1 = (-b - sqrt(b^2 - (4 * a * c))/(2 * a)) (solution1)" << std::endl;
+	std::cout << "X2 = (-b + sqrt(b^2 - (4 * a * c))/(2 * a)) (solution2)" << std::endl;
 	std::cout << "Where: (4 * a * c) is the discriminant." << std::endl << std::endl;
 	std::cout << "Replacing the values of a, b and c, we get:" << std::endl << std::endl;
-	std::cout << "X1 = (" << (b * -1) << " - sqrt(" << (b * b) << " -(" << 4 << " * " << a << " * " << c << "))/(";
+	std::cout << "X1 = (" << (b * -1) << " - sqrt(" << (b * b) << " - (" << 4 << " * " << a << " * " << c << "))/(";
 	std::cout << 2 << " * " << a << "))  (solution1)" << std::endl;
-	std::cout << "X2 = (" << (b * -1) << " + sqrt(" << (b * b) << " -(" << 4 << " * " << a << " * " << c << "))/(";
-	std::cout << 2 << " * " << a << "))  (solution2)" << std::endl;
+	std::cout << "X2 = (" << (b * -1) << " + sqrt(" << (b * b) << " - (" << 4 << " * " << a << " * " << c << "))/(";
+	std::cout << 2 << " * " << a << "))  (solution2)" << std::endl << std::endl;
+	std::cout << "If we continue resolving the equations we get:" << std::endl << std::endl;
+	if (a < 0)
+	{
+		std::cout << "X1 = - (" << (b * -1) << " - sqrt(" << p_discriminant << "))/(";
+		std::cout << 2 << " * " << (a * -1) << "))  (solution1)" << std::endl;
+		std::cout << "X2 = - (" << (b * -1) << " + sqrt(" << p_discriminant << "))/(";
+		std::cout << 2 << " * " << (a * -1) << "))  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = - (" << (b * -1) << " - " << p_rootDiscriminant << ")/(";
+		std::cout << (2 * (a * -1)) << "))  (solution1)" << std::endl;
+		std::cout << "X2 = - (" << (b * -1) << " + " << p_rootDiscriminant << ")/(";
+		std::cout << (2 * (a * -1)) << "))  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = - (" << ((b * -1) - p_rootDiscriminant) << ")/(";
+		std::cout << (2 * (a * -1)) << "))  (solution1)" << std::endl;
+		std::cout << "X2 = - (" << ((b * -1) - p_rootDiscriminant) << ")/(";
+		std::cout << (2 * (a * -1)) << "))  (solution2)" << std::endl << std::endl;
+		if (((b * -1) - p_rootDiscriminant) < 0)
+			std::cout << "X1 = " << (((b * -1) - p_rootDiscriminant) * -1) << "/" << (2 * (a * -1)) << "  (solution1)" << std::endl;
+		else
+			std::cout << "X1 = - " << (((b * -1) - p_rootDiscriminant) * -1) << "/" << (2 * (a * -1)) << "  (solution1)" << std::endl;
+		if (((b * -1) + p_rootDiscriminant) < 0)
+			std::cout << "X2 = " << (((b * -1) + p_rootDiscriminant) * -1) << "/" << (2 * (a * -1)) << "  (solution2)" << std::endl << std::endl;
+		else
+			std::cout << "X2 = - " << (((b * -1) + p_rootDiscriminant) * -1) << "/" << (2 * (a * -1)) << "  (solution2)" << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "X1 = (" << (b * -1) << " - sqrt(" << p_discriminant << "))/(";
+		std::cout << 2 << " * " << a << "))  (solution1)" << std::endl;
+		std::cout << "X2 = (" << (b * -1) << " + sqrt(" << p_discriminant << "))/(";
+		std::cout << 2 << " * " << a << "))  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = (" << (b * -1) << " - " << p_rootDiscriminant << ")/(";
+		std::cout << (2 * (a)) << "))  (solution1)" << std::endl;
+		std::cout << "X2 = (" << (b * -1) << " + " << p_rootDiscriminant << ")/(";
+		std::cout << (2 * (a)) << "))  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = (" << ((b * -1) - p_rootDiscriminant) << ")/(";
+		std::cout << (2 * (a)) << "))  (solution1)" << std::endl;
+		std::cout << "X2 = (" << ((b * -1) - p_rootDiscriminant) << ")/(";
+		std::cout << (2 * (a)) << "))  (solution2)" << std::endl << std::endl;
+		if (((b * -1) - p_rootDiscriminant) < 0)
+			std::cout << "X1 = - " << (((b * -1) - p_rootDiscriminant) * -1) << "/" << (2 * (a)) << "  (solution1)" << std::endl;
+		else
+			std::cout << "X1 = " << (((b * -1) - p_rootDiscriminant) * -1) << "/" << (2 * (a)) << "  (solution1)" << std::endl;
+		if (((b * -1) + p_rootDiscriminant) < 0)
+			std::cout << "X2 = - " << (((b * -1) + p_rootDiscriminant) * -1) << "/" << (2 * (a)) << "  (solution2)" << std::endl << std::endl;
+		else
+			std::cout << "X2 = " << (((b * -1) + p_rootDiscriminant) * -1) << "/" << (2 * (a)) << "  (solution2)" << std::endl << std::endl;
+	}
+	std::cout << "X1 = " << p_solution1 << "  (solution1)" << std::endl;
+	std::cout << "X2 = " << p_solution2 << "  (solution2)" << std::endl << std::endl;
 }
 
 
