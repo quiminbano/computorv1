@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/05 21:21:29 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:52:29 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,8 @@ void	PolynomConverter::p_storeInMap()
 		try
 		{
 			tempNumber = std::stod(split[0]);
+			if (tempNumber == p_floor(static_cast<double>(0)))
+				tempNumber = 0;
 		}
 		catch(const std::exception &e)
 		{
@@ -359,7 +361,10 @@ void	PolynomConverter::p_solveLinear()
 	expOne = p_polynom.find("X^1")->second;
 	result = expZero / expOne;
 	std::cout << "The solution is:" << std::endl;
-	std::cout << result << std::endl;
+	if (result != p_floor(static_cast<double>(0)))
+		std::cout << result << std::endl;
+	else
+		std::cout << static_cast<double>(0) << std::endl;
 }
 
 void	PolynomConverter::p_solveCuadratic()
@@ -394,8 +399,14 @@ void	PolynomConverter::p_solveCuadratic()
 	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	solution2 = (((b * -1) + (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
-	std::cout << solution1 << std::endl;
-	std::cout << solution2 << std::endl;
+	if (solution1 != p_floor(static_cast<double>(0)))
+		std::cout << solution1 << std::endl;
+	else
+		std::cout << static_cast<double>(0) << std::endl;
+	if (solution2 != p_floor(static_cast<double>(0)))
+		std::cout << solution2 << std::endl;
+	else
+		std::cout << static_cast<double>(0) << std::endl;
 }
 
 void	PolynomConverter::p_solveGradeCero()

@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 10:05:40 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:58:49 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,8 @@ void	PolynomConverter::p_storeInMap()
 		try
 		{
 			tempNumber = std::stod(split[0]);
+			if (tempNumber == p_floor(static_cast<double>(0)))
+				tempNumber = 0;
 		}
 		catch(const std::exception &e)
 		{
@@ -390,7 +392,10 @@ void	PolynomConverter::p_solveLinear()
 	expOne = p_polynom.find("X^1")->second;
 	result = expZero / expOne;
 	std::cout << "The solution is:" << std::endl;
-	std::cout << result << std::endl;
+	if (result != p_floor(static_cast<double>(0)))
+		std::cout << result << std::endl;
+	else
+		std::cout << static_cast<double>(0) << std::endl;
 	p_printIrreductible(result, true, 1, expZero, expOne);
 }
 
@@ -427,8 +432,14 @@ void	PolynomConverter::p_solveCuadratic()
 	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	solution2 = (((b * -1) + (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
-	std::cout << solution1 << std::endl;
-	std::cout << solution2 << std::endl;
+	if (solution1 != p_floor(static_cast<double>(0)))
+		std::cout << solution1 << std::endl;
+	else
+		std::cout << static_cast<double>(0) << std::endl;
+	if (solution2 != p_floor(static_cast<double>(0)))
+		std::cout << solution2 << std::endl;
+	else
+		std::cout << static_cast<double>(0) << std::endl;
 	p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 }
@@ -461,7 +472,10 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 		std::cout << "The solution as irreductible fractions are:" << std::endl;
 	if (p_floor(number) == number)
 	{
-		std::cout << number << std::endl;
+		if (number != p_floor(static_cast<double>(0)))
+			std::cout << number << std::endl;
+		else
+			std::cout << static_cast<double>(0) << std::endl;
 		return ;
 	}
 	if (p_floor(numerator) == numerator && p_floor(denominator) == denominator)
