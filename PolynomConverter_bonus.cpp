@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 19:13:27 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 21:16:55 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ void	PolynomConverter::solvePolynom()
 		p_solveLinear();
 		break;
 	case 2:
-		p_solveCuadratic();
+		p_solveQuadratic();
 		break;
 	default:
 		p_solveGradeCero();
@@ -425,7 +425,7 @@ void	PolynomConverter::p_solveLinear()
 	p_solution1 = result;
 }
 
-void	PolynomConverter::p_solveCuadratic()
+void	PolynomConverter::p_solveQuadratic()
 {
 	double									a;
 	double									b;
@@ -856,12 +856,15 @@ void	PolynomConverter::p_printGradeTwoSteps()
 	}
 	else
 		std::cout << a << " = 0" << std::endl << std::endl;
-	std::cout << "The equations to solve a cuadratic equations are:" << std::endl << std::endl;
+	std::cout << "The equations to solve a quadratic equations are:" << std::endl << std::endl;
 	std::cout << "X1 = (- b - sqrt(b^2 * -(4 * a * c))/(2 * a)) (solution1)" << std::endl;
 	std::cout << "X2 = (- b + sqrt(b^2 * -(4 * a * c))/(2 * a)) (solution2)" << std::endl;
 	std::cout << "Where: (4 * a * c) is the discriminant." << std::endl << std::endl;
 	std::cout << "Replacing the values of a, b and c, we get:" << std::endl << std::endl;
-	std::cout << "X1 = (" << (b * -1) << " - ";
+	std::cout << "X1 = (" << (b * -1) << " - sqrt(" << (b * b) << " -(" << 4 << " * " << a << " * " << c << "))/(";
+	std::cout << 2 << " * " << a << "))  (solution1)" << std::endl;
+	std::cout << "X2 = (" << (b * -1) << " + sqrt(" << (b * b) << " -(" << 4 << " * " << a << " * " << c << "))/(";
+	std::cout << 2 << " * " << a << "))  (solution2)" << std::endl;
 }
 
 

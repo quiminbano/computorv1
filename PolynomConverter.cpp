@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 10:52:29 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 21:17:30 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void	PolynomConverter::solvePolynom()
 		p_solveLinear();
 		break;
 	case 2:
-		p_solveCuadratic();
+		p_solveQuadratic();
 		break;
 	default:
 		p_solveGradeCero();
@@ -367,7 +367,7 @@ void	PolynomConverter::p_solveLinear()
 		std::cout << static_cast<double>(0) << std::endl;
 }
 
-void	PolynomConverter::p_solveCuadratic()
+void	PolynomConverter::p_solveQuadratic()
 {
 	double									a;
 	double									b;
