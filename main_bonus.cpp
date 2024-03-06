@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 00:22:40 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/05 22:45:24 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:04:59 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	main(int argc, char **argv)
 	converter.initializeInput(input);
 	try
 	{
-		converter.printPolynom(0);
+		converter.printPolynom();
 		converter.printPolynomGrade();
 		converter.solvePolynom();
 	}

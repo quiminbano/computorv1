@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/05 18:21:01 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:33:47 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,19 @@ bool	InputParser::fail() const
 
 string_vector	InputParser::getInput()
 {
-	std::string								beforeEqualString;
-	std::string								afterEqualString;
-	std::stringstream						parserObject;
-	string_vector							beforeEqualVector;
-	string_vector							afterEqualVector;
-	int										i;
+	std::string			beforeEqualString;
+	std::string			afterEqualString;
+	std::stringstream	parserObject;
+	string_vector		beforeEqualVector;
+	string_vector		afterEqualVector;
+	int					i;
 
 	i = 0;
 	beforeEqualString.clear();
 	afterEqualString.clear();
 	if (p_hasInput == false || p_hasFailed == true)
+		throw ParserError();
+	if (p_rawData.find("=") == std::string::npos)
 		throw ParserError();
 	parserObject.clear();
 	parserObject.str(p_rawData);
@@ -88,6 +90,8 @@ string_vector	InputParser::getInput()
 		throw ParserError();
 	try
 	{
+		if (p_justspaces(afterEqualString))
+			throw ParserError();
 		beforeEqualVector = p_getSplitted(beforeEqualString);
 		afterEqualVector = p_getSplitted(afterEqualString);
 		p_validateVectors(beforeEqualVector, afterEqualVector);

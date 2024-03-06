@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:19:09 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/05 21:18:10 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:13:43 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,11 @@ class InputParser
 {
 private:
 
-	std::string					p_rawData;
-	std::vector<std::string>	p_input;
-	bool						p_hasInput;
-	bool						p_hasFailed;
+	std::string		p_rawData;
+	string_vector	p_input;
+	bool			p_hasInput;
+	bool			p_hasFailed;
+	
 
 	InputParser(InputParser const &other);
 

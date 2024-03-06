@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/05 22:45:16 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:05:14 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ public:
 	~PolynomConverter();
 
 	void	initializeInput(string_vector input);
-	void	printPolynom(int state);
+	void	printPolynom();
 	bool	getFractionalExponentFlag() const;
 	bool	getHasSolutionFailed() const;
 	void	printPolynomGrade();

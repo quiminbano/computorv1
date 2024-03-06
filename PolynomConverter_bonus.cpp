@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/05 22:44:52 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:05:40 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	PolynomConverter::initializeInput(string_vector input)
 	p_findExponents();
 }
 
-void	PolynomConverter::printPolynom(int state)
+void	PolynomConverter::printPolynom()
 {
 	long		idx;
 	std::string	coefficient;
@@ -57,8 +57,7 @@ void	PolynomConverter::printPolynom(int state)
 		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
 		return ;
 	}
-	if (state == 0)
-		std::cout << "Reduced form: ";
+	std::cout << "Reduced form: ";
 	while (idx <= p_maxExp)
 	{
 		model.clear();
