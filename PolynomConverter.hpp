@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 21:16:36 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/07 16:35:47 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <iostream>
 
 typedef std::vector<std::string>	string_vector;
+
 class PolynomConverter
 {
 private:
@@ -42,6 +43,7 @@ private:
 	void			p_solveLinear();
 	void			p_solveQuadratic();
 	void			p_solveGradeCero();
+	bool			p_isOverflowed(double number1, double number2, std::string sign);
 	double			p_sqrt(double number);
 	double			p_floor(double number);
 

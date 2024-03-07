@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 21:17:30 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/07 17:21:41 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,11 @@ void	PolynomConverter::printPolynom()
 		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
 		return ;
 	}
+	if (p_hasInputOverflow == true)
+	{
+		std::cout << "Some numbers overflowed during the conversion of the polymon, I can't solve." << std::endl;
+		return ;
+	}
 	std::cout << "Reduced form: ";
 	while (idx <= p_maxExp)
 	{
@@ -94,6 +99,8 @@ void	PolynomConverter::printPolynomGrade()
 		throw EmptyInput();
 	if (p_hasFractionalExponent == true)
 		return ;
+	if (p_hasInputOverflow == true)
+		return ;
 	std::cout << "Polynomial degree: " << p_grade << std::endl;
 }
 
@@ -104,10 +111,7 @@ void	PolynomConverter::solvePolynom()
 	if (p_hasFractionalExponent == true)
 		return ;
 	if (p_hasInputOverflow == true)
-	{
-		std::cout << "Some numbers overflowed during the conversion of the polymon, I can't solve." << std::endl;
 		return ;
-	}
 	if (p_minExp < 0)
 	{
 		std::cout << "The polynom has negative exponents, I can't solve." << std::endl;
@@ -197,7 +201,12 @@ void	PolynomConverter::p_storeInMap()
 		tempString.clear();
 		tempString.append("X^" + std::to_string(static_cast<long long>(rounded)));
 		if (p_polynom.find(tempString) != p_polynom.end())
-			p_polynom[tempString] = p_polynom[tempString] + tempNumber;
+		{
+			if (p_isOverflowed(p_polynom.find(tempString)->second, tempNumber, "+") == false)
+				p_polynom[tempString] = p_polynom[tempString] + tempNumber;
+			else
+				p_hasInputOverflow = true;
+		}
 		else
 			p_polynom[tempString] = tempNumber;
 	}
@@ -360,6 +369,11 @@ void	PolynomConverter::p_solveLinear()
 		expZero = 0;
 	expOne = p_polynom.find("X^1")->second;
 	result = expZero / expOne;
+	if (p_isOverflowed(expZero, expOne, "/") == true)
+	{
+		std::cout << "Some numbers overflowed trying to solve the polynom, I can't solve." << std::endl;
+		return ;
+	}
 	std::cout << "The solution is:" << std::endl;
 	if (result != p_floor(static_cast<double>(0)))
 		std::cout << result << std::endl;
@@ -391,6 +405,12 @@ void	PolynomConverter::p_solveQuadratic()
 	if (iterC != p_polynom.end())
 		c = p_polynom.find("X^0")->second;
 	discriminant = ((b * b) - (static_cast<double>(4) * a * c));
+	if (p_isOverflowed(b, b, "*") == true || p_isOverflowed((b * b), (4 * a * c), "-") == true || \
+		p_isOverflowed(4, (a * c), "*") == true)
+	{
+		std::cout << "Some numbers overflowed trying to solve the polynom, I can't solve." << std::endl;
+		return ;
+	}
 	if (discriminant < static_cast<double>(0))
 	{
 		std::cout << "Discriminant is strictly negative, I can't solve." << std::endl;
@@ -398,6 +418,13 @@ void	PolynomConverter::p_solveQuadratic()
 	}
 	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
 	solution2 = (((b * -1) + (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
+	if (p_isOverflowed((b * -1), ((p_sqrt(discriminant))), "-") == true || p_isOverflowed((b * -1), ((p_sqrt(discriminant))), "+") == true || \
+		p_isOverflowed(2, a, "*") == true || p_isOverflowed(((b * -1) - (p_sqrt(discriminant))), (2 * a), "/") == true || \
+		p_isOverflowed(((b * -1) + (p_sqrt(discriminant))), (2 * a), "/") == true)
+	{
+		std::cout << "Some numbers overflowed trying to solve the polynom, I can't solve." << std::endl;
+		return ;
+	}
 	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
 	if (solution1 != p_floor(static_cast<double>(0)))
 		std::cout << solution1 << std::endl;
@@ -459,6 +486,25 @@ double	PolynomConverter::p_floor(double number)
 	if (toReturn == number || toReturn >= static_cast<double>(0))
 		return (toReturn);
 	return (toReturn - static_cast<double>(1));
+}
+
+bool	PolynomConverter::p_isOverflowed(double number1, double number2, std::string sign)
+{
+	double	result;
+
+	if (!sign.compare("+"))
+		result = number1 + number2;
+	if (!sign.compare("-"))
+		result = number1 - number2;
+	if (!sign.compare("*"))
+		result = number1 * number2;
+	if (!sign.compare("/"))
+		result = number1 / number2;
+	if (result == std::numeric_limits<double>::infinity())
+		return (true);
+	else if (result == (std::numeric_limits<double>::infinity() * -1))
+		return (true);
+	return (false);
 }
 
 const char	*PolynomConverter::EmptyInput::what() const throw()

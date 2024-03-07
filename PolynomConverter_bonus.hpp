@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 21:16:23 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/07 16:27:33 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 typedef std::vector<std::string>					string_vector;
 typedef std::pair<std::string, double>				pair_t;
 typedef	std::vector<std::pair<std::string, double>>	vector_pair;
+
 class PolynomConverter
 {
 private:
@@ -57,6 +58,7 @@ private:
 	long long		p_pow(long long number, long long exponent);
 	long long		p_gcd(long long numerator, long long denominator);
 	vector_pair		p_getVectorPair(string_vector input);
+	bool			p_isOverflowed(double number1, double number2, std::string sign);
 	void			p_printPairs(vector_pair paired);
 	void			p_printMap();
 	void			p_printFirstStep();
