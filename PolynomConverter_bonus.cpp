@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/07 18:19:54 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/07 18:56:18 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -810,9 +810,9 @@ void	PolynomConverter::p_printGradeOneSteps()
 	numerator = p_polynom.find("X^0")->second;
 	denominator = p_polynom.find("X^1")->second;
 	if (denominator < 0)
-		std::cout << " - " << (denominator * -1) << " = ";
+		std::cout << " - " << (denominator * -1) << " * X" << " = ";
 	else
-		std::cout << " " << denominator << " = ";
+		std::cout << " " << denominator << " * X" << " = ";
 	if (numerator < 0)
 		std::cout << " " << (numerator * -1) << std::endl << std::endl;
 	else
