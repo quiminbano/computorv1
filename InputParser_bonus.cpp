@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/06 11:15:10 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/07 22:57:54 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,24 +205,36 @@ void	InputParser::p_fixSyntax(std::string &copy)
 
 void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 {
-	std::regex	pattern1("^[+-]?[0-9]*(:?\\.[0-9]+)?\\*?[xX]\\^?[+-]?[0-9]?(:?\\.[0-9]+)?");
-	std::regex	pattern2("^[+-]?\\.[0-9]+");
-	std::regex	pattern3("^[+-]?[0-9]+(\\.[0-9]+)?\\*?(:?[xX]\\^[+-]?[0-9]+(:?\\.[0-9]+)?)?");
+	std::regex	pattern1("^[+-][0-9]*(:?\\.[0-9]+)?");
+	std::regex	pattern2("^[+-]?[0-9]*(:?\\.[0-9]+)?\\*?[xX]\\^?[+-]?[0-9]?(:?\\.[0-9]+)?");
+	std::regex	pattern3("^[+-]?\\.[0-9]+");
+	std::regex	pattern4("^[+-]?[0-9]+(\\.[0-9]+)?\\*?(:?[xX]\\^[+-]?[0-9]+(:?\\.[0-9]+)?)?");
 	std::string	sub;
 	std::smatch	match1;
 	std::smatch	match2;
 	std::smatch	match3;
+	std::smatch match4;
 
 	if (copy.size() == 0)
 		return ;
 	sub = copy.substr(static_cast<size_t>(position));
-	if ((copy.size() != 0 && sub.size() == 0) || std::regex_search(sub, match1, pattern1) == true)
+	if (sub.size() != 0 && std::regex_search(sub, match1, pattern1))
+	{
+		if (static_cast<size_t>(match1.length() + position) == copy.size())
+		{
+			copy.insert(static_cast<size_t>(position), "^1");
+			return ;
+		}
+	}
+	if ((copy.size() != 0 && sub.size() == 0) || std::regex_search(sub, match2, pattern2) == true)
 	{
 		copy.insert(static_cast<size_t>(position), "^1");
 		return ;
 	}
 	sub.clear();
 	sub = copy.substr(position + 1);
+	if (copy[position] == '^' && std::regex_search(sub, match2, pattern2) == true)
+		throw ParserError();
 	if (copy[position] != '^' && (std::isdigit(copy[position]) || copy[position] == '+' || copy[position] == '-' || copy[position] == '.'))
 	{
 		if (copy[position] == '+' || copy[position] == '-')
@@ -232,7 +244,7 @@ void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 	}
 	sub.clear();
 	sub = copy.substr(position + 1);
-	if ((copy.size() != 0 && sub.size() != 0) && std::regex_search(sub, match2, pattern2) == true)
+	if ((copy.size() != 0 && sub.size() != 0) && std::regex_search(sub, match3, pattern3) == true)
 	{
 		if ((copy[position + 1] == '+' || copy[position + 1] == '-'))
 			copy.insert((position + 2), "0");
@@ -240,7 +252,7 @@ void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 			copy.insert((position + 1), "0");
 		return ;
 	}
-	if (std::regex_search(copy, match3, pattern3) == true)
+	if (std::regex_search(copy, match4, pattern4) == true)
 		return ;
 	throw ParserError();
 }
