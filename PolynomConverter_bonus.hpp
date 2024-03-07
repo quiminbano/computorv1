@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/07 16:27:33 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/07 18:03:03 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ private:
 	void			p_printSecondStep();
 	void			p_printGradeOneSteps();
 	void			p_printGradeTwoSteps();
+	double			p_correctZero(double number);
 
 public:
 	class EmptyInput : public std::exception
