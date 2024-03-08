@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/08 16:50:01 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/08 18:56:18 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -500,7 +500,9 @@ void	PolynomConverter::p_solveQuadratic()
 	std::cout << solution1 << std::endl;
 	std::cout << solution2 << std::endl;
 	p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
+	std::cout << std::endl;
 	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
+	std::cout << std::endl;
 	p_solution1 = solution1;
 	p_solution2 = solution2;
 }
@@ -522,7 +524,18 @@ void	PolynomConverter::p_calculateImaginary(double a, double b, double discrimin
 	if (imaginarySolution == p_floor(static_cast<double>(0)))
 		imaginarySolution = p_floor(static_cast<double>(0));
 	std::cout << realSolution << " - " << imaginarySolution << " * i" << std::endl;
-	std::cout << realSolution << " + " << imaginarySolution << " * i" << std::endl;	
+	std::cout << realSolution << " + " << imaginarySolution << " * i" << std::endl;
+	std::cout << "The solution as irreductible fractions are:" << std::endl;
+	std::cout << "(";
+	p_printIrreductible(realSolution, false, 2, ((b *-1)), (static_cast<double>(2) * a));
+	std::cout << ") - ((";
+	p_printIrreductible(imaginarySolution, false, 2, (p_sqrt((discriminant * -1))), (static_cast<double>(2) * a));
+	std::cout << ") * i)" << std::endl;
+	std::cout << "(";
+	p_printIrreductible(realSolution, false, 2, ((b *-1)), (static_cast<double>(2) * a));
+	std::cout << ") + ((";
+	p_printIrreductible(imaginarySolution, false, 2, (p_sqrt((discriminant * -1))), (static_cast<double>(2) * a));
+	std::cout << ") * i)" << std::endl;
 }
 
 void	PolynomConverter::p_solveGradeCero()
@@ -594,7 +607,7 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 		down *= -1;
 		up *= -1;
 	}
-	std::cout << up << "/" << down << std::endl;
+	std::cout << up << "/" << down;
 }
 
 double	PolynomConverter::p_sqrt(double squared)
