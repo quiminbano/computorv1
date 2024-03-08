@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/07 17:21:41 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/08 16:35:53 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -413,7 +413,8 @@ void	PolynomConverter::p_solveQuadratic()
 	}
 	if (discriminant < static_cast<double>(0))
 	{
-		std::cout << "Discriminant is strictly negative, I can't solve." << std::endl;
+		std::cout << "Discriminant is strictly negative, The solutions are:" << std::endl;
+		p_calculateImaginary(a, b, discriminant);
 		return ;
 	}
 	solution1 = (((b * -1) - (p_sqrt(discriminant))) / (static_cast<double>(2) * a));
@@ -434,6 +435,26 @@ void	PolynomConverter::p_solveQuadratic()
 		std::cout << solution2 << std::endl;
 	else
 		std::cout << static_cast<double>(0) << std::endl;
+}
+
+void	PolynomConverter::p_calculateImaginary(double a, double b, double discriminant)
+{
+	double	realSolution;
+	double	imaginarySolution;
+
+	realSolution = (b *-1)/(2 * a);
+	imaginarySolution = p_sqrt((discriminant * -1))/(2 * a);
+	if (p_isOverflowed((b *-1), (2 * a), "/") == true || p_isOverflowed(p_sqrt(discriminant * -1), (2 * a), "/") == true)
+	{
+		std::cout << "Some numbers overflowed trying to solve the polynom, I can't solve." << std::endl;
+		return ;
+	}
+	if (realSolution == p_floor(static_cast<double>(0)))
+		realSolution = p_floor(static_cast<double>(0));
+	if (imaginarySolution == p_floor(static_cast<double>(0)))
+		imaginarySolution = p_floor(static_cast<double>(0));
+	std::cout << realSolution << " - " << imaginarySolution << " * i" << std::endl;
+	std::cout << realSolution << " + " << imaginarySolution << " * i" << std::endl;	
 }
 
 void	PolynomConverter::p_solveGradeCero()

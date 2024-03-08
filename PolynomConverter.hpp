@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/07 16:35:47 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/08 16:24:50 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ private:
 	bool							p_hasInput;
 	bool							p_hasInputOverflow;
 	bool							p_hasFractionalExponent;
+	bool							p_isImaginary;
 	std::map<std::string, double>	p_polynom;
 	long							p_grade;
 	long							p_minExp;
@@ -42,6 +43,7 @@ private:
 	void			p_findExponents();
 	void			p_solveLinear();
 	void			p_solveQuadratic();
+	void			p_calculateImaginary(double a, double b, double discriminant);
 	void			p_solveGradeCero();
 	bool			p_isOverflowed(double number1, double number2, std::string sign);
 	double			p_sqrt(double number);
