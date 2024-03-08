@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/08 16:35:53 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/08 16:50:15 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -413,7 +413,7 @@ void	PolynomConverter::p_solveQuadratic()
 	}
 	if (discriminant < static_cast<double>(0))
 	{
-		std::cout << "Discriminant is strictly negative, The solutions are:" << std::endl;
+		std::cout << "Discriminant is strictly negative, the two solutions are:" << std::endl;
 		p_calculateImaginary(a, b, discriminant);
 		return ;
 	}

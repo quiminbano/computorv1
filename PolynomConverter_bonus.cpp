@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/07 22:03:33 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/08 16:50:01 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -475,8 +475,8 @@ void	PolynomConverter::p_solveQuadratic()
 	p_discriminant = discriminant;
 	if (discriminant < static_cast<double>(0))
 	{
-		std::cout << "Discriminant is strictly negative, I can't solve." << std::endl;
-		p_hasFailedSolving = true;
+		std::cout << "Discriminant is strictly negative, the two solutions are:" << std::endl;
+		p_calculateImaginary(a, b, discriminant);
 		return ;
 	}
 	p_rootDiscriminant = p_sqrt(discriminant);
@@ -503,6 +503,26 @@ void	PolynomConverter::p_solveQuadratic()
 	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 	p_solution1 = solution1;
 	p_solution2 = solution2;
+}
+
+void	PolynomConverter::p_calculateImaginary(double a, double b, double discriminant)
+{
+	double	realSolution;
+	double	imaginarySolution;
+
+	realSolution = (b *-1)/(2 * a);
+	imaginarySolution = p_sqrt((discriminant * -1))/(2 * a);
+	if (p_isOverflowed((b *-1), (2 * a), "/") == true || p_isOverflowed(p_sqrt(discriminant * -1), (2 * a), "/") == true)
+	{
+		std::cout << "Some numbers overflowed trying to solve the polynom, I can't solve." << std::endl;
+		return ;
+	}
+	if (realSolution == p_floor(static_cast<double>(0)))
+		realSolution = p_floor(static_cast<double>(0));
+	if (imaginarySolution == p_floor(static_cast<double>(0)))
+		imaginarySolution = p_floor(static_cast<double>(0));
+	std::cout << realSolution << " - " << imaginarySolution << " * i" << std::endl;
+	std::cout << realSolution << " + " << imaginarySolution << " * i" << std::endl;	
 }
 
 void	PolynomConverter::p_solveGradeCero()

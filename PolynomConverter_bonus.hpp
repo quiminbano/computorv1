@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/07 18:03:03 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/08 16:46:24 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ private:
 	void			p_findExponents();
 	void			p_solveLinear();
 	void			p_solveQuadratic();
+	void			p_calculateImaginary(double a, double b, double discriminant);
 	void			p_solveGradeCero();
 	void			p_printIrreductible(double number, bool toPrint, int grade, double numerator, double denominator);
 	double			p_sqrt(double number);
