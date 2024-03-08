@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/07 22:57:54 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/08 08:37:04 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,11 +220,8 @@ void	InputParser::p_checkNext(std::string &copy, ptrdiff_t position)
 	sub = copy.substr(static_cast<size_t>(position));
 	if (sub.size() != 0 && std::regex_search(sub, match1, pattern1))
 	{
-		if (static_cast<size_t>(match1.length() + position) == copy.size())
-		{
-			copy.insert(static_cast<size_t>(position), "^1");
-			return ;
-		}
+		copy.insert(static_cast<size_t>(position), "^1");
+		return ;
 	}
 	if ((copy.size() != 0 && sub.size() == 0) || std::regex_search(sub, match2, pattern2) == true)
 	{
