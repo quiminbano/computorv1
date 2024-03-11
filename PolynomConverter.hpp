@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/08 16:24:50 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/11 16:00:19 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ private:
 	void			p_calculateImaginary(double a, double b, double discriminant);
 	void			p_solveGradeCero();
 	bool			p_isOverflowed(double number1, double number2, std::string sign);
+	double			p_correctZero(double number);
 	double			p_sqrt(double number);
 	double			p_floor(double number);
 

@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/08 16:46:24 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:09:03 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@
 typedef std::vector<std::string>					string_vector;
 typedef std::pair<std::string, double>				pair_t;
 typedef	std::vector<std::pair<std::string, double>>	vector_pair;
+typedef enum e_sign
+{
+	PLUS,
+	MINUS
+
+}	t_sign;
 
 class PolynomConverter
 {
@@ -41,6 +47,8 @@ private:
 	double							p_solution2;
 	double							p_discriminant;
 	double							p_rootDiscriminant;
+	double							p_realPart;
+	double							p_imaginaryPart;
 
 	PolynomConverter(PolynomConverter const &other);
 
@@ -54,18 +62,21 @@ private:
 	void			p_calculateImaginary(double a, double b, double discriminant);
 	void			p_solveGradeCero();
 	void			p_printIrreductible(double number, bool toPrint, int grade, double numerator, double denominator);
+	void			p_printIrreductibleImaginary(bool toPrint, double a, double b, double rootValue, t_sign sign);
 	double			p_sqrt(double number);
 	double			p_floor(double number);
 	long long		p_pow(long long number, long long exponent);
 	long long		p_gcd(long long numerator, long long denominator);
 	vector_pair		p_getVectorPair(string_vector input);
 	bool			p_isOverflowed(double number1, double number2, std::string sign);
+	bool			p_isOverflowedInIrreductible(double number);
 	void			p_printPairs(vector_pair paired);
 	void			p_printMap();
 	void			p_printFirstStep();
 	void			p_printSecondStep();
 	void			p_printGradeOneSteps();
 	void			p_printGradeTwoSteps();
+	bool			p_calculateUpAndDown(double number, double numerator, double denominator, long long &up, long long &down);
 	double			p_correctZero(double number);
 
 public:

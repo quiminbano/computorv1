@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/08 18:56:18 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:07:02 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@
 PolynomConverter::PolynomConverter() : p_hasInput(false), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
 {
 	p_hasFailedSolving = false;
+	p_solution1 = 0;
+	p_solution2 = 0;
+	p_discriminant = 0;
+	p_rootDiscriminant = 0;
+	p_realPart = 0;
+	p_imaginaryPart = 0;
 }
 
 PolynomConverter::PolynomConverter(string_vector input, string_vector before, string_vector after) : p_input(input), p_hasInput(true), p_hasInputOverflow(false), p_hasFractionalExponent(false), p_grade(0), p_minExp(0), p_maxExp(0)
@@ -46,6 +52,8 @@ void	PolynomConverter::initializeInput(string_vector input, string_vector before
 	p_solution2 = 0;
 	p_discriminant = 0;
 	p_rootDiscriminant = 0;
+	p_realPart = 0;
+	p_imaginaryPart = 0;
 	p_hasInput = true;
 	p_hasInputOverflow = false;
 	p_hasFractionalExponent = false;
@@ -492,7 +500,10 @@ void	PolynomConverter::p_solveQuadratic()
 		p_hasFailedSolving = true;
 		return ;
 	}
-	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
+	if (discriminant == p_floor(static_cast<double>(0)))
+		std::cout << "Discriminant is Zero, the two solutions are:" << std::endl;
+	else
+		std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
 	if (solution1 == p_floor(static_cast<double>(0)))
 		solution1 = static_cast<double>(0);
 	if (solution2 == p_floor(static_cast<double>(0)))
@@ -500,9 +511,7 @@ void	PolynomConverter::p_solveQuadratic()
 	std::cout << solution1 << std::endl;
 	std::cout << solution2 << std::endl;
 	p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
-	std::cout << std::endl;
 	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
-	std::cout << std::endl;
 	p_solution1 = solution1;
 	p_solution2 = solution2;
 }
@@ -513,6 +522,7 @@ void	PolynomConverter::p_calculateImaginary(double a, double b, double discrimin
 	double	imaginarySolution;
 
 	realSolution = (b *-1)/(2 * a);
+	p_rootDiscriminant = p_sqrt(discriminant * -1);
 	imaginarySolution = p_sqrt((discriminant * -1))/(2 * a);
 	if (p_isOverflowed((b *-1), (2 * a), "/") == true || p_isOverflowed(p_sqrt(discriminant * -1), (2 * a), "/") == true)
 	{
@@ -523,19 +533,20 @@ void	PolynomConverter::p_calculateImaginary(double a, double b, double discrimin
 		realSolution = p_floor(static_cast<double>(0));
 	if (imaginarySolution == p_floor(static_cast<double>(0)))
 		imaginarySolution = p_floor(static_cast<double>(0));
-	std::cout << realSolution << " - " << imaginarySolution << " * i" << std::endl;
-	std::cout << realSolution << " + " << imaginarySolution << " * i" << std::endl;
-	std::cout << "The solution as irreductible fractions are:" << std::endl;
-	std::cout << "(";
-	p_printIrreductible(realSolution, false, 2, ((b *-1)), (static_cast<double>(2) * a));
-	std::cout << ") - ((";
-	p_printIrreductible(imaginarySolution, false, 2, (p_sqrt((discriminant * -1))), (static_cast<double>(2) * a));
-	std::cout << ") * i)" << std::endl;
-	std::cout << "(";
-	p_printIrreductible(realSolution, false, 2, ((b *-1)), (static_cast<double>(2) * a));
-	std::cout << ") + ((";
-	p_printIrreductible(imaginarySolution, false, 2, (p_sqrt((discriminant * -1))), (static_cast<double>(2) * a));
-	std::cout << ") * i)" << std::endl;
+	if (imaginarySolution >= static_cast<double>(0))
+	{
+		std::cout << p_correctZero(realSolution) << " - (" << p_correctZero(imaginarySolution) << " * i)" << std::endl;
+		std::cout << p_correctZero(realSolution) << " + (" << p_correctZero(imaginarySolution) << " * i)" << std::endl;
+	}
+	else
+	{
+		std::cout << p_correctZero(realSolution) << " + (" << p_correctZero(imaginarySolution * -1) << " * i)" << std::endl;
+		std::cout << p_correctZero(realSolution) << " - (" << p_correctZero(imaginarySolution * -1) << " * i)" << std::endl;
+	}
+	p_realPart = realSolution;
+	p_imaginaryPart = imaginarySolution;
+	p_printIrreductibleImaginary(true, a, b, (p_rootDiscriminant * -1), MINUS);
+	p_printIrreductibleImaginary(false, a, b, p_rootDiscriminant, PLUS);
 }
 
 void	PolynomConverter::p_solveGradeCero()
@@ -556,9 +567,6 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 {
 	long long	down;
 	long long	up;
-	long long	scale;
-	long long	commonDivisor;
-	double		decimal;
 
 	if (toPrint == true && grade == 1)
 		std::cout << "The solution as irreductible fraction is:" << std::endl;
@@ -572,6 +580,78 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 			std::cout << static_cast<double>(0) << std::endl;
 		return ;
 	}
+	if (p_calculateUpAndDown(number, numerator, denominator, up, down) == true)
+		std::cout << up << "/" << down << std::endl;
+}
+
+void	PolynomConverter::p_printIrreductibleImaginary(bool toPrint, double a, double b, double rootValue, t_sign sign)
+{
+	long long	upReal;
+	long long	downReal;
+	long long	upImaginary;
+	long long	upImaginaryAfterSign;
+	long long	downImaginary;
+	bool		hasNotOverflowedFirst;
+	bool		hasNotOverflowedSecond;
+	bool		hasWholeReal;
+	bool		hasWholeImaginary;
+
+	hasWholeImaginary = false;
+	hasWholeReal = false;
+	hasNotOverflowedFirst = false;
+	hasNotOverflowedSecond = false;
+	upImaginaryAfterSign = 0;
+	if (toPrint == true)
+		std::cout << "The solution as irreductible fractions are:" << std::endl;
+	if (p_realPart == p_floor(p_realPart))
+	{
+		hasWholeReal = true;
+		hasNotOverflowedFirst = true;
+	}
+	else
+		hasNotOverflowedFirst = p_calculateUpAndDown(p_realPart, (b * -1), (2 * a), upReal, downReal);
+	if (p_imaginaryPart == p_floor(p_imaginaryPart))
+	{
+		hasWholeImaginary = true;
+		hasNotOverflowedSecond = true;
+	}
+	else
+		hasNotOverflowedSecond = p_calculateUpAndDown(p_imaginaryPart, rootValue, (2 * a), upImaginary, downImaginary);
+	if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeImaginary == false)
+		std::cout << upReal << "/" << downReal;
+	else if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeImaginary == true)
+		std::cout << p_correctZero(p_realPart);
+	if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeImaginary == false)
+	{
+		if ((sign == MINUS && upImaginary >= static_cast<double>(0)) || (sign == PLUS && upImaginary < static_cast<double>(0)))
+			std::cout << " - ";
+		else
+			std::cout << " + ";
+		if (upImaginary < 0)
+			upImaginaryAfterSign = upImaginary * -1;
+		else
+			upImaginaryAfterSign = upImaginary;
+			std::cout << "(" << upImaginaryAfterSign << " * i)/" << downImaginary << std::endl;
+	}
+	else if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeImaginary == true)
+	{
+		if ((sign == MINUS && p_imaginaryPart >= static_cast<double>(0)) || (sign == PLUS && p_imaginaryPart < static_cast<double>(0)))
+			std::cout << " - ";
+		else
+			std::cout << " + ";
+		if (p_imaginaryPart < 0)
+			std::cout << "(" << p_correctZero((p_imaginaryPart * -1)) << " * i)" << std::endl;
+		else
+			std::cout << "(" << p_correctZero(p_imaginaryPart) << " * i)" << std::endl;
+	}
+}
+
+bool	PolynomConverter::p_calculateUpAndDown(double number, double numerator, double denominator, long long &up, long long &down)
+{
+	long long	commonDivisor;
+	long long	scale;
+	double		decimal;
+
 	if (p_floor(numerator) == numerator && p_floor(denominator) == denominator)
 	{
 		up = static_cast<long long>(numerator);
@@ -580,9 +660,7 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 	else
 	{
 		if (number > p_floor(number))
-		{
 			decimal = number - p_floor(number);
-		}
 		else
 		{
 			decimal = p_floor(number) - number;
@@ -591,12 +669,12 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 		scale = (std::to_string(decimal).size() - std::to_string(decimal).find(".") - 1);
 		down = p_pow(10, scale);
 		if (down >= 1000000)
-			down = 1000000000000000;
+			down = 1000000000;
 		up = static_cast<long long>(number * static_cast<double>(down));
-		if (static_cast<double>(up) < (number * static_cast<double>(down)))
+		if (p_isOverflowedInIrreductible(number) == true)
 		{
 			std::cout << "An overflow happened trying to obtain the irreductible solution, I can't solve it." << std::endl;
-			return ;
+			return (false);
 		}
 	}
 	commonDivisor = p_gcd(up, down);
@@ -604,10 +682,15 @@ void	PolynomConverter::p_printIrreductible(double number, bool toPrint, int grad
 	down /= commonDivisor;
 	if (down < 0 && up > 0)
 	{
+		if (down == std::numeric_limits<long long>::min())
+		{
+			std::cout << "An overflow happened trying to obtain the irreductible solution, I can't solve it." << std::endl;
+			return (false);
+		}
 		down *= -1;
 		up *= -1;
 	}
-	std::cout << up << "/" << down;
+	return (true);
 }
 
 double	PolynomConverter::p_sqrt(double squared)
@@ -1024,6 +1107,31 @@ bool	PolynomConverter::p_isOverflowed(double number1, double number2, std::strin
 		return (true);
 	else if (result == (std::numeric_limits<double>::infinity() * -1))
 		return (true);
+	return (false);
+}
+
+bool	PolynomConverter::p_isOverflowedInIrreductible(double number)
+{
+	int			index;
+	t_sign		sign;
+	double		power;
+	double		result;
+
+	index = 0;
+	sign = PLUS;
+	power = static_cast<double>(10);
+	if (number < static_cast<double>(0))
+		sign = MINUS;
+	while (index < 9)
+	{
+		result = (number * power);
+		if (result == std::numeric_limits<double>::infinity() || result == (std::numeric_limits<double>::infinity() * -1))
+			return (true);
+		if ((sign == PLUS && static_cast<long long>(result) < 0) || (sign == MINUS && static_cast<long long>(result) > 0))
+			return (false);
+		index++;
+		power *= static_cast<double>(10);
+	}
 	return (false);
 }
 

@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/08 08:37:04 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/11 11:08:23 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ string_vector	InputParser::getInput()
 	if (p_hasInput == false || p_hasFailed == true)
 		throw ParserError();
 	if (p_rawData.find("=") == std::string::npos)
-		throw ParserError();
+		p_rawData.append(" = 0");
 	parserObject.clear();
 	parserObject.str(p_rawData);
 	if (parserObject.fail() == true)

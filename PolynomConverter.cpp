@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/08 16:50:15 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/11 16:02:21 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -426,7 +426,10 @@ void	PolynomConverter::p_solveQuadratic()
 		std::cout << "Some numbers overflowed trying to solve the polynom, I can't solve." << std::endl;
 		return ;
 	}
-	std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
+	if (discriminant == p_floor(static_cast<double>(0)))
+		std::cout << "Discriminant is Zero, the two solutions are:" << std::endl;
+	else
+		std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
 	if (solution1 != p_floor(static_cast<double>(0)))
 		std::cout << solution1 << std::endl;
 	else
@@ -453,8 +456,16 @@ void	PolynomConverter::p_calculateImaginary(double a, double b, double discrimin
 		realSolution = p_floor(static_cast<double>(0));
 	if (imaginarySolution == p_floor(static_cast<double>(0)))
 		imaginarySolution = p_floor(static_cast<double>(0));
-	std::cout << realSolution << " - " << imaginarySolution << " * i" << std::endl;
-	std::cout << realSolution << " + " << imaginarySolution << " * i" << std::endl;	
+	if (imaginarySolution >= static_cast<double>(0))
+	{
+		std::cout << p_correctZero(realSolution) << " - (" << p_correctZero(imaginarySolution) << " * i)" << std::endl;
+		std::cout << p_correctZero(realSolution) << " + (" << p_correctZero(imaginarySolution) << " * i)" << std::endl;
+	}
+	else
+	{
+		std::cout << p_correctZero(realSolution) << " + (" << p_correctZero(imaginarySolution * -1) << " * i)" << std::endl;
+		std::cout << p_correctZero(realSolution) << " - (" << p_correctZero(imaginarySolution * -1) << " * i)" << std::endl;
+	}
 }
 
 void	PolynomConverter::p_solveGradeCero()
@@ -526,6 +537,13 @@ bool	PolynomConverter::p_isOverflowed(double number1, double number2, std::strin
 	else if (result == (std::numeric_limits<double>::infinity() * -1))
 		return (true);
 	return (false);
+}
+
+double	PolynomConverter::p_correctZero(double number)
+{
+	if (number != p_floor(static_cast<double>(0)))
+		return (number);
+	return (static_cast<double>(0));
 }
 
 const char	*PolynomConverter::EmptyInput::what() const throw()
