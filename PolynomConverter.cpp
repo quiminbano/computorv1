@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/11 16:02:21 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/12 13:46:08 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	PolynomConverter::initializeInput(string_vector input)
 void	PolynomConverter::printPolynom()
 {
 	long		idx;
-	std::string	coefficient;
+	std::string	exponents;
 	std::string	model;
 
 	idx = p_minExp;
@@ -51,7 +51,7 @@ void	PolynomConverter::printPolynom()
 		throw EmptyInput();
 	if (p_hasFractionalExponent == true)
 	{
-		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		std::cout << "The polynom has one or more non whole exponents, I can't solve." << std::endl;
 		return ;
 	}
 	if (p_hasInputOverflow == true)
@@ -67,10 +67,10 @@ void	PolynomConverter::printPolynom()
 		model.append(std::to_string(idx));
 		if (p_polynom.find(model) != p_polynom.end())
 		{
-			coefficient = std::to_string(p_polynom.find(model)->second);
-			if (coefficient[0] != '-' && idx != p_minExp)
+			exponents = std::to_string(p_polynom.find(model)->second);
+			if (exponents[0] != '-' && idx != p_minExp)
 				std::cout << "+";
-			else if (coefficient[0] != '-' && idx == p_minExp)
+			else if (exponents[0] != '-' && idx == p_minExp)
 				std::cout << "";
 			else
 				std::cout << "-";
@@ -391,12 +391,14 @@ void	PolynomConverter::p_solveQuadratic()
 	double									solution2;
 	std::map<std::string, double>::iterator	iterB;
 	std::map<std::string, double>::iterator	iterC;
+	bool									hasOneSolution;
 
 	discriminant = 0;
 	b = 0;
 	c = 0;
 	solution1 = 0;
 	solution2 = 0;
+	hasOneSolution = false;
 	a = p_polynom.find("X^2")->second;
 	iterB = p_polynom.find("X^1");
 	if (iterB != p_polynom.end())
@@ -427,17 +429,15 @@ void	PolynomConverter::p_solveQuadratic()
 		return ;
 	}
 	if (discriminant == p_floor(static_cast<double>(0)))
-		std::cout << "Discriminant is Zero, the two solutions are:" << std::endl;
+	{
+		std::cout << "Discriminant is Zero, the solution is:" << std::endl;
+		hasOneSolution = true;
+	}
 	else
 		std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
-	if (solution1 != p_floor(static_cast<double>(0)))
-		std::cout << solution1 << std::endl;
-	else
-		std::cout << static_cast<double>(0) << std::endl;
-	if (solution2 != p_floor(static_cast<double>(0)))
-		std::cout << solution2 << std::endl;
-	else
-		std::cout << static_cast<double>(0) << std::endl;
+	std::cout << p_correctZero(solution1) << std::endl;
+	if (hasOneSolution == false)
+		std::cout << p_correctZero(solution2) << std::endl;
 }
 
 void	PolynomConverter::p_calculateImaginary(double a, double b, double discriminant)

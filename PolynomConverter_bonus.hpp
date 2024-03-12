@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:49:01 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/11 17:09:03 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/12 12:59:07 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ private:
 	void			p_printSecondStep();
 	void			p_printGradeOneSteps();
 	void			p_printGradeTwoSteps();
+	void			p_printImaginaryGradeTwoSteps(double a, double b);
+	void			p_printDiscriminantZeroSteps(double a, double b);
 	bool			p_calculateUpAndDown(double number, double numerator, double denominator, long long &up, long long &down);
 	double			p_correctZero(double number);
 

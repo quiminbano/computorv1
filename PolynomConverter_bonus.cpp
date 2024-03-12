@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/11 17:07:02 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/12 13:45:16 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	PolynomConverter::initializeInput(string_vector input, string_vector before
 void	PolynomConverter::printPolynom()
 {
 	long		idx;
-	std::string	coefficient;
+	std::string	exponents;
 	std::string	model;
 
 	idx = p_minExp;
@@ -74,7 +74,7 @@ void	PolynomConverter::printPolynom()
 		throw EmptyInput();
 	if (p_hasFractionalExponent == true)
 	{
-		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		std::cout << "The polynom has one or more non whole exponents, I can't solve." << std::endl;
 		p_hasFailedSolving = true;
 		return ;
 	}
@@ -91,10 +91,10 @@ void	PolynomConverter::printPolynom()
 		model.append(std::to_string(idx));
 		if (p_polynom.find(model) != p_polynom.end())
 		{
-			coefficient = std::to_string(p_polynom.find(model)->second);
-			if (coefficient[0] != '-' && idx != p_minExp)
+			exponents = std::to_string(p_polynom.find(model)->second);
+			if (exponents[0] != '-' && idx != p_minExp)
 				std::cout << "+";
-			else if (coefficient[0] != '-' && idx == p_minExp)
+			else if (exponents[0] != '-' && idx == p_minExp)
 				std::cout << "";
 			else
 				std::cout << "-";
@@ -457,7 +457,9 @@ void	PolynomConverter::p_solveQuadratic()
 	double									solution2;
 	std::map<std::string, double>::iterator	iterB;
 	std::map<std::string, double>::iterator	iterC;
+	bool									hasOneSolution;
 
+	hasOneSolution = false;
 	discriminant = 0;
 	b = 0;
 	c = 0;
@@ -501,17 +503,25 @@ void	PolynomConverter::p_solveQuadratic()
 		return ;
 	}
 	if (discriminant == p_floor(static_cast<double>(0)))
-		std::cout << "Discriminant is Zero, the two solutions are:" << std::endl;
+	{
+		std::cout << "Discriminant is Zero, the solution is:" << std::endl;
+		hasOneSolution = true;
+	}
 	else
 		std::cout << "Discriminant is strictly positive, the two solutions are:" << std::endl;
 	if (solution1 == p_floor(static_cast<double>(0)))
 		solution1 = static_cast<double>(0);
 	if (solution2 == p_floor(static_cast<double>(0)))
 		solution2 = static_cast<double>(0);
-	std::cout << solution1 << std::endl;
-	std::cout << solution2 << std::endl;
-	p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
-	p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
+	std::cout << p_correctZero(solution1) << std::endl;
+	if (hasOneSolution == false)
+		std::cout << p_correctZero(solution2) << std::endl;
+	if (hasOneSolution == true)
+		p_printIrreductible(solution1, true, 1, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
+	else
+		p_printIrreductible(solution1, true, 2, ((b * -1) - (p_sqrt(discriminant))), (static_cast<double>(2) * a));
+	if (hasOneSolution == false)
+		p_printIrreductible(solution2, false, 2, ((b * -1) + (p_sqrt(discriminant))), (static_cast<double>(2) * a));
 	p_solution1 = solution1;
 	p_solution2 = solution2;
 }
@@ -839,7 +849,7 @@ void	PolynomConverter::p_printSecondStep()
 
 void	PolynomConverter::p_printPairs(vector_pair paired)
 {
-	std::string	coefficient;
+	std::string	exponents;
 	size_t		idx;
 
 	idx = 0;
@@ -847,15 +857,15 @@ void	PolynomConverter::p_printPairs(vector_pair paired)
 		throw EmptyInput();
 	if (p_hasFractionalExponent == true)
 	{
-		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		std::cout << "The polynom has one or more non whole exponents, I can't solve." << std::endl;
 		return ;
 	}
 	for (pair_t &iter : paired)
 	{
-		coefficient = std::to_string(iter.second);
-		if (coefficient[0] != '-' && idx != 0)
+		exponents = std::to_string(iter.second);
+		if (exponents[0] != '-' && idx != 0)
 			std::cout << "+";
-		else if (coefficient[0] != '-' && idx == 0)
+		else if (exponents[0] != '-' && idx == 0)
 			std::cout << "";
 		else
 			std::cout << "-";
@@ -879,7 +889,7 @@ void	PolynomConverter::p_printPairs(vector_pair paired)
 
 void	PolynomConverter::p_printMap()
 {
-	std::string	coefficient;
+	std::string	exponents;
 	size_t		idx;
 
 	idx = 0;
@@ -887,15 +897,15 @@ void	PolynomConverter::p_printMap()
 		throw EmptyInput();
 	if (p_hasFractionalExponent == true)
 	{
-		std::cout << "The polynom has one or more non whole coefficients, I can't solve." << std::endl;
+		std::cout << "The polynom has one or more non whole exponents, I can't solve." << std::endl;
 		return ;
 	}
 	for (std::pair<const std::string, double> &iter : p_polynom)
 	{
-		coefficient = std::to_string(iter.second);
-		if (coefficient[0] != '-' && idx != 0)
+		exponents = std::to_string(iter.second);
+		if (exponents[0] != '-' && idx != 0)
 			std::cout << "+";
-		else if (coefficient[0] != '-' && idx == 0)
+		else if (exponents[0] != '-' && idx == 0)
 			std::cout << "";
 		else
 			std::cout << "-";
@@ -1029,6 +1039,16 @@ void	PolynomConverter::p_printGradeTwoSteps()
 		std::cout << 2 << " * " << p_correctZero((a * -1)) << "))  (solution1)" << std::endl;
 		std::cout << "X2 = - (" << p_correctZero((b * -1)) << " + sqrt(" << p_discriminant << "))/(";
 		std::cout << 2 << " * " << p_correctZero((a * -1)) << "))  (solution2)" << std::endl << std::endl;
+		if (p_discriminant < 0)
+		{
+			p_printImaginaryGradeTwoSteps(a, b);
+			return ;
+		}
+		if (p_discriminant == p_floor(static_cast<double>(0)))
+		{
+			p_printDiscriminantZeroSteps(a, b);
+			return ;
+		}
 		std::cout << "X1 = - (" << p_correctZero((b * -1)) << " - " << p_rootDiscriminant << ")/(";
 		std::cout << p_correctZero((2 * (a * -1))) << "))  (solution1)" << std::endl;
 		std::cout << "X2 = - (" << p_correctZero((b * -1)) << " + " << p_rootDiscriminant << ")/(";
@@ -1070,6 +1090,16 @@ void	PolynomConverter::p_printGradeTwoSteps()
 		std::cout << 2 << " * " << a << "))  (solution1)" << std::endl;
 		std::cout << "X2 = (" << p_correctZero((b * -1)) << " + sqrt(" << p_discriminant << "))/(";
 		std::cout << 2 << " * " << a << "))  (solution2)" << std::endl << std::endl;
+		if (p_discriminant < 0)
+		{
+			p_printImaginaryGradeTwoSteps(a, b);
+			return ;
+		}
+		if (p_discriminant == p_floor(static_cast<double>(0)))
+		{
+			p_printDiscriminantZeroSteps(a, b);
+			return ;
+		}
 		std::cout << "X1 = (" << p_correctZero((b * -1)) << " - " << p_rootDiscriminant << ")/(";
 		std::cout << p_correctZero((2 * (a))) << "))  (solution1)" << std::endl;
 		std::cout << "X2 = (" << p_correctZero((b * -1)) << " + " << p_rootDiscriminant << ")/(";
@@ -1089,6 +1119,60 @@ void	PolynomConverter::p_printGradeTwoSteps()
 	}
 	std::cout << "X1 = " << p_correctZero(p_solution1) << "  (solution1)" << std::endl;
 	std::cout << "X2 = " << p_correctZero(p_solution2) << "  (solution2)" << std::endl << std::endl;
+}
+
+void	PolynomConverter::p_printImaginaryGradeTwoSteps(double a, double b)
+{
+	if (a < 0)
+	{
+		std::cout << "X1 = - (" << p_correctZero((b * -1)) << " - (" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)" << ")/(";
+		std::cout << p_correctZero((2 * (a * -1))) << "))  (solution1)" << std::endl;
+		std::cout << "X2 = - (" << p_correctZero((b * -1)) << " + (" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)" << ")/(";
+		std::cout << p_correctZero((2 * (a * -1))) << "))  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = - (" << p_correctZero((b * -1)) << "/" << p_correctZero((2 * (a * -1))) << ") - ((" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)/";
+		std::cout << p_correctZero((2 * (a * -1))) << ")  (solution1)" << std::endl;
+		std::cout << "X2 = - (" << p_correctZero((b * -1)) << "/" << p_correctZero((2 * (a * -1))) << ") + ((" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)/";
+		std::cout << p_correctZero((2 * (a * -1))) << ")  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = - (" << (p_correctZero((b * -1))/p_correctZero((2 * (a * -1)))) << " - (" << (p_correctZero(p_sqrt(p_discriminant * -1))/p_correctZero((2 * (a * -1)))) << " * i)";
+		std::cout << ")  (solution1)" << std::endl;
+		std::cout << "X2 = - (" << (p_correctZero((b * -1))/p_correctZero((2 * (a * -1)))) << " + (" << (p_correctZero(p_sqrt(p_discriminant * -1))/p_correctZero((2 * (a * -1)))) << " * i)";
+		std::cout << ")  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = " << ((p_correctZero((b))/p_correctZero((2 * (a * -1))))) << " + (" << (p_correctZero(p_sqrt(p_discriminant * -1))/p_correctZero((2 * (a * -1)))) << " * i)";
+		std::cout << "  (solution1)" << std::endl;
+		std::cout << "X2 = " << ((p_correctZero((b))/p_correctZero((2 * (a * -1))))) << " - (" << (p_correctZero(p_sqrt(p_discriminant * -1))/p_correctZero((2 * (a * -1)))) << " * i)";
+		std::cout << "  (solution2)" << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "X1 = (" << p_correctZero((b * -1)) << " - (" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)" << ")/(";
+		std::cout << p_correctZero((2 * (a))) << "))  (solution1)" << std::endl;
+		std::cout << "X2 = (" << p_correctZero((b * -1)) << " + (" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)" << ")/(";
+		std::cout << p_correctZero((2 * (a))) << "))  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = (" << p_correctZero((b * -1)) << "/" << p_correctZero((2 * (a))) << ") - ((" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)/";
+		std::cout << p_correctZero((2 * (a))) << ")  (solution1)" << std::endl;
+		std::cout << "X2 = (" << p_correctZero((b * -1)) << "/" << p_correctZero((2 * (a))) << ") + ((" << p_correctZero(p_sqrt(p_discriminant * -1)) << " * i)/";
+		std::cout << p_correctZero((2 * (a))) << ")  (solution2)" << std::endl << std::endl;
+		std::cout << "X1 = " << (p_correctZero((b * -1))/p_correctZero((2 * (a)))) << " - (" << (p_correctZero(p_sqrt(p_discriminant * -1))/p_correctZero((2 * (a)))) << " * i)";
+		std::cout << "  (solution1)" << std::endl;
+		std::cout << "X2 = " << (p_correctZero((b * -1))/p_correctZero((2 * (a)))) << " + (" << (p_correctZero(p_sqrt(p_discriminant * -1))/p_correctZero((2 * (a)))) << " * i)";
+		std::cout << "  (solution2)" << std::endl << std::endl;
+	}
+}
+
+void	PolynomConverter::p_printDiscriminantZeroSteps(double a, double b)
+{
+	std::cout << "The square root of 0 is 0. So, our equation has just one solution:" << std::endl << std::endl;
+	if (a < 0)
+	{
+		std::cout << "X = - (" << p_correctZero((b * -1)) << "/" << p_correctZero(2 * (a * -1)) << ")" << std::endl << std::endl;
+		std::cout << "X = - (" << p_correctZero((b * -1) / (2 * (a * -1))) << ")" << std::endl << std::endl;
+		std::cout << "X = " << p_correctZero((b) / (2 * (a * -1))) << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "X = (" << p_correctZero((b * -1)) << "/" << p_correctZero(2 * (a)) << ")" << std::endl << std::endl;
+		std::cout << "X = " << p_correctZero((b * -1) / (2 * (a))) << std::endl << std::endl;
+	}
 }
 
 bool	PolynomConverter::p_isOverflowed(double number1, double number2, std::string sign)
