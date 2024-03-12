@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/12 13:45:16 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/12 14:26:15 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -944,26 +944,16 @@ void	PolynomConverter::p_printGradeOneSteps()
 	else
 		std::cout << " - " << p_correctZero(numerator) << std::endl << std::endl;
 	std::cout << "Isolating X, we get:" << std::endl << std::endl;
-	std::cout << " X = ";
+	numerator *= static_cast<double>(-1);
 	if (numerator > 0 && denominator < 0)
-		denominator *= static_cast<double>(-1);
-	else if (numerator > 0 && denominator > 0)
-		numerator *= static_cast<double>(-1);
-	else if (numerator < 0 && denominator < 0)
 	{
 		numerator *= static_cast<double>(-1);
 		denominator *= static_cast<double>(-1);
 	}
-	if (numerator == p_floor(static_cast<double>(0)))
-		numerator = 0;
-	if (numerator < 0)
-	{
-		std::cout << "- ";
-		numerator *= -1;
-	}
-	std::cout << p_correctZero(numerator) << "/" << denominator << std::endl << std::endl;
+	std::cout << " X = ";
+	std::cout << p_correctZero(numerator) << "/" << p_correctZero(denominator) << std::endl << std::endl;
 	std::cout << "Then, the result is:" << std::endl << std::endl;
-	std::cout << " " << p_correctZero(p_solution1) << std::endl << std::endl;
+	std::cout << "X = " << p_correctZero(p_solution1) << std::endl << std::endl;
 }
 
 void	PolynomConverter::p_printGradeTwoSteps()

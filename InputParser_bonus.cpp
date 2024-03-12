@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/27 22:20:30 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/11 11:08:23 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/12 14:09:03 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ string_vector	InputParser::getInput()
 	i = 0;
 	beforeEqualString.clear();
 	afterEqualString.clear();
-	if (p_hasInput == false || p_hasFailed == true)
+	if (p_hasInput == false || p_hasFailed == true || p_justspaces(p_rawData))
 		throw ParserError();
 	if (p_rawData.find("=") == std::string::npos)
 		p_rawData.append(" = 0");
