@@ -6,7 +6,7 @@
 /*   By: corellan <corellan@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 17:48:57 by corellan          #+#    #+#             */
-/*   Updated: 2024/03/12 14:26:15 by corellan         ###   ########.fr       */
+/*   Updated: 2024/03/13 20:11:54 by corellan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -627,9 +627,9 @@ void	PolynomConverter::p_printIrreductibleImaginary(bool toPrint, double a, doub
 	}
 	else
 		hasNotOverflowedSecond = p_calculateUpAndDown(p_imaginaryPart, rootValue, (2 * a), upImaginary, downImaginary);
-	if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeImaginary == false)
+	if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeReal == false)
 		std::cout << upReal << "/" << downReal;
-	else if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeImaginary == true)
+	else if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeReal == true)
 		std::cout << p_correctZero(p_realPart);
 	if (hasNotOverflowedFirst == true && hasNotOverflowedSecond == true && hasWholeImaginary == false)
 	{
